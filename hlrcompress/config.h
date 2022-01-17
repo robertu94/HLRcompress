@@ -1,0 +1,7 @@
+#ifndef __HLRCOMPRESS_CONFIG_H
+#define __HLRCOMPRESS_CONFIG_H
+
+#define USE_MKL   0
+#define USE_ILP64 0
+
+#endif // __HLRCOMPRESS_CONFIG_H
