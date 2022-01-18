@@ -8,8 +8,14 @@
 // Copyright   : Max Planck Institute MIS 2004-2022. All Rights Reserved.
 //
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range2d.h>
+#include <memory>
+
+#include <hlrcompress/config.h>
+
+#if USE_TBB == 1
+#  include <tbb/parallel_for.h>
+#  include <tbb/blocked_range2d.h>
+#endif
 
 #include <hlrcompress/hlr/lowrank_block.hh>
 #include <hlrcompress/hlr/dense_block.hh>
@@ -81,6 +87,8 @@ compress ( const indexset &                 rowis,
         indexset    sub_colis[2] = { indexset( colis.first(), mid_col-1 ), indexset( mid_col, colis.last() ) };
         auto        sub_D        = tensor2< std::unique_ptr< block< value_t > > >( 2, 2 );
 
+        #if USE_TBB == 1
+        
         ::tbb::parallel_for(
             ::tbb::blocked_range2d< uint >( 0, 2, 0, 2 ),
             [&,ntile] ( const auto &  r )
@@ -98,6 +106,42 @@ compress ( const indexset &                 rowis,
                     }// for
                 }// for
             } );
+
+        #elif USE_OPENMP == 1
+
+        #pragma omp taskgroup
+        {
+            #pragma omp taskloop collapse(2) default(shared)
+            for ( uint  i = 0; i < 2; ++i )
+            {
+                for ( uint  j = 0; j < 2; ++j )
+                {
+                    const auto  D_sub = D( sub_rowis[i] - rowis.first(),
+                                           sub_colis[j] - colis.first() );
+                        
+                    sub_D(i,j) = compress( sub_rowis[i], sub_colis[j], D_sub, acc, approx, ntile, zconf );
+                        
+                    HLRCOMPRESS_ASSERT( sub_D(i,j).get() != nullptr );
+                }// for
+            }// for
+        }// omp taskgroup
+        
+        #else
+
+        for ( uint  i = 0; i < 2; ++i )
+        {
+            for ( uint  j = 0; j < 2; ++j )
+            {
+                const auto  D_sub = D( sub_rowis[i] - rowis.first(),
+                                       sub_colis[j] - colis.first() );
+                
+                sub_D(i,j) = compress( sub_rowis[i], sub_colis[j], D_sub, acc, approx, ntile, zconf );
+                
+                HLRCOMPRESS_ASSERT( sub_D(i,j).get() != nullptr );
+            }// for
+        }// for
+        
+        #endif
 
         bool  all_lowrank = true;
         bool  all_dense   = true;
@@ -211,7 +255,24 @@ compress ( const blas::matrix< value_t > &  D,
            const size_t                     ntile,
            const zconfig_t *                zconf = nullptr )
 {
-    auto  M = detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc, approx, ntile, zconf );
+    auto  M = std::unique_ptr< block< value_t > >();
+
+    #if USE_TBB == 1
+    
+    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc, approx, ntile, zconf ) );
+
+    #elif USE_OPENMP == 1
+
+    #pragma omp parallel
+    #pragma omp single
+    #pragma omp task
+    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc, approx, ntile, zconf ) );
+
+    #else
+    
+    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc, approx, ntile, zconf ) );
+    
+    #endif
 
     HLRCOMPRESS_ASSERT( M.get() != nullptr );
 
