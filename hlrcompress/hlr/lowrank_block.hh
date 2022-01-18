@@ -251,8 +251,13 @@ public:
 
         #if USE_ZFP == 1
 
-        bs += sizeof(_zU) + _zU->size();
-        bs += sizeof(_zV) + _zV->size();
+        bs += sizeof(_zU) + sizeof(_zV);
+
+        if ( _zU.get() != nullptr )
+            bs += _zU->size();
+        
+        if ( _zV.get() != nullptr )
+            bs += _zV->size();
         
         #endif
 

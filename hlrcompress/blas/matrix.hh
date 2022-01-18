@@ -287,6 +287,18 @@ public:
         return matrix< value_t >( *this, r1, r2 );
     }
                           
+    // return vector referencing column j
+    vector< value_t >  column   ( const idx_t  j ) const
+    {
+        return vector< value_t >( *this, range::all, j );
+    }
+    
+    // return vector referencing row i
+    vector< value_t >  row      ( const idx_t  i ) const
+    {
+        return vector< value_t >( *this, i, range::all );
+    }
+
     // return size in bytes used by this object
     size_t  byte_size () const
     {

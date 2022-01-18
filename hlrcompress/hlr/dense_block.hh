@@ -210,7 +210,10 @@ public:
 
         #if USE_ZFP == 1
 
-        bs += sizeof(_zM) + _zM->size();
+        bs += sizeof(_zM);
+
+        if ( _zM.get() != nullptr )
+            bs +=_zM->size();
         
         #endif
 

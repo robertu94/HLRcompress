@@ -10,6 +10,7 @@
 
 #include <hlrcompress/compress.hh>
 #include <hlrcompress/approx/svd.hh>
+#include <hlrcompress/approx/rrqr.hh>
 
 int
 main ( int,
@@ -26,7 +27,7 @@ main ( int,
             M(i,j) = uniform_distr( generator );
 
     auto  acc = hlrcompress::fixed_prec( 1e-4 );
-    auto  apx = hlrcompress::SVD();
+    auto  apx = hlrcompress::RRQR();
     auto  zM  = hlrcompress::compress< double, decltype(apx) >( M, acc, apx, 16 );
 
     std::cout << M.byte_size() << std::endl;
