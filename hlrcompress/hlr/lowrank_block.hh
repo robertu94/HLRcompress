@@ -28,7 +28,7 @@ public:
     using value_t = T_value;
     using real_t  = real_type_t< value_t >;
     
-    #if defined(HAS_ZFP)
+    #if USE_ZFP == 1
     // compressed storage based on underlying floating point type
     using compressed_storage = std::unique_ptr< zfp::const_array2< real_t > >;
     #endif
@@ -37,7 +37,7 @@ private:
     // lowrank factors
     blas::matrix< value_t >  _U, _V;
 
-    #if defined(HAS_ZFP)
+    #if USE_ZFP == 1
     // optional: stores compressed data
     compressed_storage       _zU, _zV;
     #endif
@@ -153,13 +153,13 @@ public:
     // - may result in non-compression if storage does not decrease
     virtual void   compress      ( const zconfig_t &  config )
     {
-        #if defined(HAS_ZFP)
+        #if USE_ZFP == 1
     
         if ( is_compressed() )
             return;
     
         uint          factor    = sizeof(value_t) / sizeof(real_t);
-        const size_t  mem_dense = sizeof(value_t) * rank() * ( M.nrows() + M.ncols() );
+        const size_t  mem_dense = sizeof(value_t) * rank() * ( _U.nrows() + _V.ncols() );
             
         if constexpr( std::is_same_v< value_t, real_t > )
         {
@@ -204,13 +204,13 @@ public:
     // uncompress internal data
     virtual void   uncompress    ()
     {
-        #if defined(HAS_ZFP)
+        #if USE_ZFP == 1
         
         if ( ! is_compressed() )
             return;
 
-        auto  uU = blas::matrix< value_t >( nrows(), rank() );
-        auto  uV = blas::matrix< value_t >( ncols(), rank() );
+        auto  uU = blas::matrix< value_t >( this->nrows(), rank() );
+        auto  uV = blas::matrix< value_t >( this->ncols(), rank() );
     
         _zU->get( (real_t*) uU.data() );
         _zV->get( (real_t*) uV.data() );
@@ -225,8 +225,8 @@ public:
     // return true if data is compressed
     virtual bool   is_compressed () const
     {
-        #if defined(HAS_ZFP)
-        return ! _zU.get() != nullptr;
+        #if USE_ZFP == 1
+        return _zU.get() != nullptr;
         #else
         return false;
         #endif
@@ -249,10 +249,10 @@ public:
     {
         auto  bs = block< value_t >::byte_size() + _U.byte_size() + _V.byte_size();
 
-        #if defined(HAS_ZFP)
+        #if USE_ZFP == 1
 
-        bs += sizeof(_zU) + _zU.size();
-        bs += sizeof(_zV) + _zV.size();
+        bs += sizeof(_zU) + _zU->size();
+        bs += sizeof(_zV) + _zV->size();
         
         #endif
 
@@ -263,7 +263,7 @@ protected:
     // remove compressed storage (standard storage not restored!)
     virtual void   remove_compressed ()
     {
-        #if defined(HAS_ZFP)
+        #if USE_ZFP == 1
         _zU.reset( nullptr );
         _zV.reset( nullptr );
         #endif

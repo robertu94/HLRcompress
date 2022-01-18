@@ -1,9 +1,10 @@
 #ifndef __HLRCOMPRESS_CONFIG_H
 #define __HLRCOMPRESS_CONFIG_H
 
-#define USE_TBB     0
-#define USE_OPENMP  0
+#define USE_TBB     @TBB_FOUND@
+#define USE_OPENMP  @OPENMP_FOUND@
 #define USE_MKL     0
-#define USE_ILP64   0
+#define USE_ILP64   @HLRCOMPRESS_USE_ILP64@
+#define USE_ZFP     @ZFP_FOUND@
 
 #endif // __HLRCOMPRESS_CONFIG_H
