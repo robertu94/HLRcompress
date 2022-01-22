@@ -8,7 +8,7 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 project(HLRcompress
   VERSION 0.1
   DESCRIPTION "Hierarchical Low-Rank Compression"
-  LANGUAGES CXX
+  LANGUAGES C CXX
   )
 enable_testing()
 
@@ -63,6 +63,10 @@ else()
 endif()
 
 find_package(ZFP)
+
+find_package(HDF5 COMPONENTS CXX)
+
+message( STATUS "HDF5: ${HDF5_FOUND}")
 
 add_subdirectory(hlrcompress)
 add_subdirectory(example)

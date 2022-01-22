@@ -184,8 +184,8 @@ compress ( const indexset &                 rowis,
                     auto  Rij   = static_cast< lowrank_block< value_t > * >( sub_D(i,j).get() );
                     auto  Uij   = Rij->U();
                     auto  Vij   = Rij->V();
-                    auto  U_sub = U( sub_rowis[i] - rowis.first(), blas::range( pos, pos + Uij.ncols() ) );
-                    auto  V_sub = V( sub_colis[j] - colis.first(), blas::range( pos, pos + Uij.ncols() ) );
+                    auto  U_sub = U( sub_rowis[i] - rowis.first(), blas::range( pos, pos + Uij.ncols() - 1 ) );
+                    auto  V_sub = V( sub_colis[j] - colis.first(), blas::range( pos, pos + Uij.ncols() - 1 ) );
 
                     blas::copy( Uij, U_sub );
                     blas::copy( Vij, V_sub );
