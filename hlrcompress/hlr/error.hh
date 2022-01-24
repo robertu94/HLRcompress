@@ -10,7 +10,7 @@
 
 #include <hlrcompress/config.h>
 
-#if USE_TBB == 1
+#if HLRCOMPRESS_USE_TBB == 1
 #  include <mutex>
 #  include <tbb/parallel_for.h>
 #  include <tbb/blocked_range2d.h>
@@ -39,7 +39,7 @@ sqerror_fro ( const blas::matrix< value_t > &  D,
         auto    BZ  = static_cast< const structured_block< value_t > * >( & Z );
         real_t  err = real_t(0);
 
-        #if USE_TBB == 1
+        #if HLRCOMPRESS_USE_TBB == 1
 
         auto  mtx = std::mutex();
         
@@ -64,7 +64,7 @@ sqerror_fro ( const blas::matrix< value_t > &  D,
                 }
             } );
 
-        #elif USE_OPENMP == 1
+        #elif HLRCOMPRESS_USE_OPENMP == 1
 
         #pragma omp taskgroup
         {

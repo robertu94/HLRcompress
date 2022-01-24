@@ -23,7 +23,7 @@ public:
     using value_t = T_value;
     using real_t  = real_type_t< value_t >;
     
-    #if USE_ZFP == 1
+    #if HLRCOMPRESS_USE_ZFP == 1
     // compressed storage based on underlying floating point type
     using compressed_storage = std::unique_ptr< zfp::const_array2< real_t > >;
     #endif
@@ -32,7 +32,7 @@ private:
     // dense data
     blas::matrix< value_t >  _M;
 
-    #if USE_ZFP == 1
+    #if HLRCOMPRESS_USE_ZFP == 1
     // optional: stores compressed data
     compressed_storage       _zM;
     #endif
@@ -123,7 +123,7 @@ public:
     // - may result in non-compression if storage does not decrease
     virtual void   compress      ( const zconfig_t &  config )
     {
-        #if USE_ZFP == 1
+        #if HLRCOMPRESS_USE_ZFP == 1
     
         if ( is_compressed() )
             return;
@@ -166,7 +166,7 @@ public:
     // uncompress internal data
     virtual void   uncompress    ()
     {
-        #if USE_ZFP == 1
+        #if HLRCOMPRESS_USE_ZFP == 1
         
         if ( ! is_compressed() )
             return;
@@ -184,7 +184,7 @@ public:
     // return true if data is compressed
     virtual bool   is_compressed () const
     {
-        #if USE_ZFP == 1
+        #if HLRCOMPRESS_USE_ZFP == 1
         return _zM.get() != nullptr;
         #else
         return false;
@@ -208,7 +208,7 @@ public:
     {
         auto  bs = block< value_t >::byte_size() + _M.byte_size();
 
-        #if USE_ZFP == 1
+        #if HLRCOMPRESS_USE_ZFP == 1
 
         bs += sizeof(_zM);
 
@@ -224,7 +224,7 @@ protected:
     // remove compressed storage (standard storage not restored!)
     virtual void   remove_compressed ()
     {
-        #if USE_ZFP == 1
+        #if HLRCOMPRESS_USE_ZFP == 1
         _zM.reset( nullptr );
         #endif
     }

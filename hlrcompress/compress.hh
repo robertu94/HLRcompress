@@ -12,7 +12,7 @@
 
 #include <hlrcompress/config.h>
 
-#if USE_TBB == 1
+#if HLRCOMPRESS_USE_TBB == 1
 #  include <tbb/parallel_for.h>
 #  include <tbb/blocked_range2d.h>
 #endif
@@ -89,7 +89,7 @@ compress ( const indexset &                 rowis,
         indexset    sub_colis[2] = { indexset( colis.first(), mid_col-1 ), indexset( mid_col, colis.last() ) };
         auto        sub_D        = tensor2< std::unique_ptr< block< value_t > > >( 2, 2 );
 
-        #if USE_TBB == 1
+        #if HLRCOMPRESS_USE_TBB == 1
         
         ::tbb::parallel_for(
             ::tbb::blocked_range2d< uint >( 0, 2, 0, 2 ),
@@ -109,7 +109,7 @@ compress ( const indexset &                 rowis,
                 }// for
             } );
 
-        #elif USE_OPENMP == 1
+        #elif HLRCOMPRESS_USE_OPENMP == 1
 
         #pragma omp taskgroup
         {
@@ -250,22 +250,6 @@ compress ( const indexset &                 rowis,
     }// else
 }
 
-//
-// per block adaptive accuracy
-//
-struct adaptive_accuracy : public accuracy
-{
-    adaptive_accuracy ( const double  abs_eps )
-            : accuracy( 0.0, abs_eps )
-    {}
-    
-    virtual const accuracy  acc ( const indexset &  rowis,
-                                  const indexset &  colis ) const
-    {
-        return absolute_prec( abs_eps() * std::sqrt( double(rowis.size() * colis.size()) ) );
-    }
-};
-
 }// namespace detail
 
 template < typename value_t,
@@ -279,14 +263,14 @@ compress ( const blas::matrix< value_t > &  D,
 {
     const auto  norm_D = blas::norm_F( D );
     const auto  delta  = norm_D * rel_prec / D.nrows();
-    auto        acc_D  = detail::adaptive_accuracy( delta );
+    auto        acc_D  = adaptive_accuracy( delta );
     auto        M      = std::unique_ptr< block< value_t > >();
 
-    #if USE_TBB == 1
+    #if HLRCOMPRESS_USE_TBB == 1
     
     M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc_D, approx, ntile, zconf ) );
 
-    #elif USE_OPENMP == 1
+    #elif HLRCOMPRESS_USE_OPENMP == 1
 
     #pragma omp parallel
     #pragma omp single

@@ -179,6 +179,23 @@ absolute_prec ( const double  absolute_eps )
     return accuracy( 0.0, absolute_eps );
 }
 
+/////////////////////////////////////////////////
+//
+// per block adaptive accuracy
+//
+struct adaptive_accuracy : public accuracy
+{
+    adaptive_accuracy ( const double  abs_eps )
+            : accuracy( 0.0, abs_eps )
+    {}
+    
+    virtual const accuracy  acc ( const indexset &  rowis,
+                                  const indexset &  colis ) const
+    {
+        return absolute_prec( abs_eps() * std::sqrt( double(rowis.size() * colis.size()) ) );
+    }
+};
+
 }// namespace hlrcompress
 
 #endif  // __HLRCOMPRESS_APPROX_ACCURACY_HH

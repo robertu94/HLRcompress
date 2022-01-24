@@ -11,6 +11,11 @@ if(ZFP_FOUND)
   target_link_libraries(logmatrix ${ZFP_LIBRARIES})
 endif()
 
+if(CUDA_FOUND)
+  target_include_directories(logmatrix PRIVATE ${CUDA_INCLUDE_DIRS})
+  target_link_libraries(logmatrix ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES} ${CUDA_cusolver_LIBRARY})
+endif()
+
 target_include_directories(logmatrix PRIVATE ${CMAKE_BINARY_DIR})
 target_include_directories(logmatrix PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
 

@@ -13,12 +13,13 @@
 
 #include <hlrcompress/config.h>
 
-#if USE_TBB == 1
+#if HLRCOMPRESS_USE_TBB == 1
 #  include <tbb/parallel_for.h>
 #  include <tbb/blocked_range2d.h>
 #endif
 
 #include <hlrcompress/compress.hh>
+#include <hlrcompress/compress_cuda.hh>
 #include <hlrcompress/approx/svd.hh>
 #include <hlrcompress/approx/rrqr.hh>
 #include <hlrcompress/hlr/error.hh>
@@ -33,10 +34,11 @@ gen_matrix_log ( const size_t  n )
     const     double  h  = 2 * pi / value_t(n);
     auto              M  = blas::matrix< value_t >( n, n );
 
-    #if USE_TBB == 1
+    #if HLRCOMPRESS_USE_TBB == 1
     
     ::tbb::parallel_for(
-        ::tbb::blocked_range2d< size_t >( 0, n, 1024, 0, n, 1024 ),
+        ::tbb::blocked_range2d< size_t >( 0, n, 1024,
+                                          0, n, 1024 ),
         [&,h] ( const auto &  r )
         {
             auto  rofs  = r.rows().begin();
@@ -106,7 +108,7 @@ main ( int      argc,
     const auto  ntile = ( argc > 3 ? atoi( argv[3] ) : 32 );
     auto        apx   = SVD();
 
-    #if USE_ZFP == 1
+    #if HLRCOMPRESS_USE_ZFP == 1
     const auto  rate  = ( argc > 4 ? atoi( argv[4] ) : 32 );
     auto        zconf = std::make_unique< zconfig_t >( zfp_config_rate( rate, false ) );
     #else
@@ -114,7 +116,13 @@ main ( int      argc,
     #endif
 
     auto        tic   = std::chrono::high_resolution_clock::now();
-    auto        zM    = compress< double, decltype(apx) >( M, acc, apx, ntile, zconf.get() );
+
+    #if HLRCOMPRESS_USE_CUDA == 1
+    auto        zM    = compress_cuda( M, acc, apx, ntile, zconf.get() );
+    #else
+    auto        zM    = compress( M, acc, apx, ntile, zconf.get() );
+    #endif
+    
     auto        toc   = std::chrono::duration_cast< std::chrono::microseconds >( std::chrono::high_resolution_clock::now() - tic );
 
     std::cout << "runtime:      " << toc.count() / 1e6 << " s" << std::endl;

@@ -35,7 +35,7 @@ main ( int      argc,
     const auto  ntile  = ( argc > 3 ? atoi( argv[3] ) : 32 );
     auto        apx    = SVD();
 
-    #if USE_ZFP == 1
+    #if HLRCOMPRESS_USE_ZFP == 1
     const auto  rate   = ( argc > 4 ? atoi( argv[4] ) : 0 );
     auto        zconf  = ( rate > 0
                            ? std::make_unique< zconfig_t >( zfp_config_rate( rate, false ) )
@@ -48,7 +48,7 @@ main ( int      argc,
               << "  matrix:     " << matrix << " ( " << M.nrows() << " x " << M.ncols() << " )" << std::endl
               << "  accuracy:   " << std::setprecision(4) << std::scientific << acc << std::endl
               << "  tilesize:   " << ntile << std::endl;
-    #if USE_ZFP == 1
+    #if HLRCOMPRESS_USE_ZFP == 1
     std::cout << "  zfp rate:   " << rate << std::endl;
     #endif
     

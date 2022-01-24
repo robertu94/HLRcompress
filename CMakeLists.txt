@@ -57,7 +57,6 @@ find_package(BLAS REQUIRED)
 find_package(LAPACK REQUIRED)
 
 message( STATUS "BLAS:   ${BLAS_LIBRARIES}")
-message( STATUS "LAPACK: ${BLAS_LIBRARIES}")
 
 if(HLRCOMPRESS_USE_ILP64 EQUAL "ON")
   set(HLRCOMPRESS_USE_ILP64 "1")
@@ -66,10 +65,16 @@ else()
 endif()
 
 find_package(ZFP)
-
 find_package(HDF5 COMPONENTS CXX)
+find_package(CUDA)
 
-message( STATUS "HDF5: ${HDF5_FOUND}")
+message( STATUS "cuSolver: ${CUDA_cusolver_LIBRARY}")
+
+if(CUDA_FOUND)
+  set(CUDA_FOUND "1")
+else()
+  set(CUDA_FOUND "0")
+endif()
 
 add_subdirectory(hlrcompress)
 add_subdirectory(example)

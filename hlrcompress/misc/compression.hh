@@ -10,7 +10,7 @@
 
 #include <hlrcompress/config.h>
 
-#if USE_ZFP == 1
+#if HLRCOMPRESS_USE_ZFP == 1
 #include <zfpcarray2.h>
 #endif
 
@@ -21,7 +21,7 @@
 namespace hlrcompress
 {
 
-#if USE_ZFP == 1
+#if HLRCOMPRESS_USE_ZFP == 1
 using  zconfig_t = zfp_config;
 #else 
 struct zconfig_t {};
