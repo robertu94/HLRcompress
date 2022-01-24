@@ -6,14 +6,18 @@
 // Copyright   : Max Planck Institute MIS 2004-2022. All Rights Reserved.
 //
 
+#include <cstdlib>
 #include <vector>
 #include <string>
+#include <chrono>
+#include <iomanip>
 
 #include <H5Cpp.h>
 
 #include <hlrcompress/compress.hh>
 #include <hlrcompress/approx/svd.hh>
 #include <hlrcompress/approx/rrqr.hh>
+#include <hlrcompress/hlr/error.hh>
 
 using namespace hlrcompress;
 
@@ -27,18 +31,47 @@ main ( int      argc,
     const auto  matrix = ( argc > 1 ? argv[1] : "matrix.h5" );
     auto        M      = read_matrix( matrix );
 
-    std::cout << "matrix " << matrix << " has dimension " << M.nrows() << " x " << M.ncols() << std::endl;
+    const auto  acc    = ( argc > 2 ? atof( argv[2] ) : 1e-4 );
+    const auto  ntile  = ( argc > 3 ? atoi( argv[3] ) : 32 );
+    auto        apx    = SVD();
+
+    #if USE_ZFP == 1
+    const auto  rate   = ( argc > 4 ? atoi( argv[4] ) : 0 );
+    auto        zconf  = ( rate > 0
+                           ? std::make_unique< zconfig_t >( zfp_config_rate( rate, false ) )
+                           : std::unique_ptr< zconfig_t >() );
+    #else
+    auto        zconf  = std::unique_ptr< zconfig_t >();
+    #endif
     
-    auto  acc = fixed_prec( 1e-4 );
-    auto  apx = SVD();
-    auto  zM  = compress< double, decltype(apx) >( M, acc, apx, 32 );
+    std::cout << "compressing " << std::endl
+              << "  matrix:     " << matrix << " ( " << M.nrows() << " x " << M.ncols() << " )" << std::endl
+              << "  accuracy:   " << std::setprecision(4) << std::scientific << acc << std::endl
+              << "  tilesize:   " << ntile << std::endl;
+    #if USE_ZFP == 1
+    std::cout << "  zfp rate:   " << rate << std::endl;
+    #endif
+    
+    auto        tic    = std::chrono::high_resolution_clock::now();
+    auto        zM     = compress< double, decltype(apx) >( M, acc, apx, ntile, zconf.get() );
+    auto        toc    = std::chrono::duration_cast< std::chrono::microseconds >( std::chrono::high_resolution_clock::now() - tic );
 
-    const auto  size_M  = M.byte_size();
-    const auto  size_zM = zM->byte_size();
-        
-    std::cout << "original:   " << size_M << std::endl;
-    std::cout << "compressed: " << size_zM << " / " << ( 100.0 * double(size_zM) / double(size_M) ) << "%" << std::endl;
+    std::cout << "runtime:      " << std::defaultfloat << toc.count() / 1e6 << " s" << std::endl;
 
+    const auto  bs_M   = M.byte_size();
+    const auto  bs_zM  = zM->byte_size();
+
+    std::cout << "storage " << std::endl
+              << "  original:   " << bs_M << std::endl
+              << "  compressed: " << bs_zM << " / " << ( 100.0 * double(bs_zM) / double(bs_M) ) << "%" << std::endl;
+
+    // needs to be uncompressed for error computation (for now)
+    zM->uncompress();
+
+    auto  norm_M = blas::norm_F( M );
+    
+    std::cout << "error:        " << std::setprecision(4) << std::scientific << error_fro( M, *zM ) / norm_M << std::endl;
+    
     return 0;
 }
 

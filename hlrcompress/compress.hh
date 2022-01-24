@@ -63,10 +63,12 @@ compress ( const indexset &                 rowis,
             
             if ( U.byte_size() + V.byte_size() < Dc.byte_size() )
             {
+                // std::cout << "R: " << to_string( rowis ) << " x " << to_string( colis ) << ", " << U.ncols() << std::endl;
                 return std::make_unique< lowrank_block< value_t > >( rowis, colis, std::move( U ), std::move( V ) );
             }// if
         }// if
 
+        // std::cout << "D: " << to_string( rowis ) << " x " << to_string( colis ) << std::endl;
         return std::make_unique< dense_block< value_t > >( rowis, colis, std::move( blas::copy( D ) ) );
     }// if
     else
@@ -204,6 +206,7 @@ compress ( const indexset &                 rowis,
 
             if ( W.byte_size() + X.byte_size() < smem )
             {
+                // std::cout << "R: " << to_string( rowis ) << " x " << to_string( colis ) << ", " << W.ncols() << std::endl;
                 return std::make_unique< lowrank_block< value_t > >( rowis, colis, std::move( W ), std::move( X ) );
             }// if
         }// if
@@ -214,6 +217,7 @@ compress ( const indexset &                 rowis,
         
         if ( all_dense )
         {
+            // std::cout << "D: " << to_string( rowis ) << " x " << to_string( colis ) << std::endl;
             return std::make_unique< dense_block< value_t > >( rowis, colis, std::move( blas::copy( D ) ) );
         }// if
         
@@ -222,6 +226,8 @@ compress ( const indexset &                 rowis,
         // also: finally compress with zfp
         //
 
+        // std::cout << "B: " << to_string( rowis ) << " x " << to_string( colis ) << std::endl;
+        
         auto  B = std::make_unique< structured_block< value_t > >( rowis, colis );
 
         B->set_block_struct( 2, 2 );
@@ -244,33 +250,52 @@ compress ( const indexset &                 rowis,
     }// else
 }
 
+//
+// per block adaptive accuracy
+//
+struct adaptive_accuracy : public accuracy
+{
+    adaptive_accuracy ( const double  abs_eps )
+            : accuracy( 0.0, abs_eps )
+    {}
+    
+    virtual const accuracy  acc ( const indexset &  rowis,
+                                  const indexset &  colis ) const
+    {
+        return absolute_prec( abs_eps() * std::sqrt( double(rowis.size() * colis.size()) ) );
+    }
+};
+
 }// namespace detail
 
 template < typename value_t,
            typename approx_t >
 std::unique_ptr< block< value_t > >
 compress ( const blas::matrix< value_t > &  D,
-           const accuracy &                 acc,
+           const double                     rel_prec,
            const approx_t &                 approx,
            const size_t                     ntile,
            const zconfig_t *                zconf = nullptr )
 {
-    auto  M = std::unique_ptr< block< value_t > >();
+    const auto  norm_D = blas::norm_F( D );
+    const auto  delta  = norm_D * rel_prec / D.nrows();
+    auto        acc_D  = detail::adaptive_accuracy( delta );
+    auto        M      = std::unique_ptr< block< value_t > >();
 
     #if USE_TBB == 1
     
-    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc, approx, ntile, zconf ) );
+    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc_D, approx, ntile, zconf ) );
 
     #elif USE_OPENMP == 1
 
     #pragma omp parallel
     #pragma omp single
     #pragma omp task
-    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc, approx, ntile, zconf ) );
+    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc_D, approx, ntile, zconf ) );
 
     #else
     
-    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc, approx, ntile, zconf ) );
+    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc_D, approx, ntile, zconf ) );
     
     #endif
 

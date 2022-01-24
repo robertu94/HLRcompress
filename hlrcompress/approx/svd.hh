@@ -83,20 +83,15 @@ svd ( const blas::matrix< value_t > &  U,
     // don't increase rank
     //
 
-    const idx_t  acc_rank = idx_t( acc.rank() );
-
     if ( in_rank == 0 )
         return { std::move( blas::matrix< value_t >( nrows_U, 0 ) ),
                  std::move( blas::matrix< value_t >( nrows_V, 0 ) ) };
-
-    if ( in_rank <= acc_rank )
-        return { std::move( blas::copy( U ) ), std::move( blas::copy( V ) ) };
 
     //
     // truncate given low-rank matrix
     //
     
-    if ( std::max( in_rank, acc_rank ) >= std::min( nrows_U, nrows_V ) )
+    if ( in_rank >= std::min( nrows_U, nrows_V ) )
     {
         //
         // since rank is too large, build U = U·V^T and do full-SVD
@@ -104,9 +99,6 @@ svd ( const blas::matrix< value_t > &  U,
             
         auto  M    = blas::prod( value_t(1), U, adjoint(V) );
         auto  lacc = accuracy( acc );
-
-        if ( acc_rank > 0 )
-            lacc.set_max_rank( acc_rank );
 
         return svd( M, lacc );
     }// if

@@ -1,5 +1,5 @@
 add_executable (logmatrix logmatrix.cc)
-target_link_libraries (logmatrix HLRcompress blas lapack)
+target_link_libraries (logmatrix HLRcompress ${BLAS_LIBRARIES})
 
 if(TBB_FOUND)
   target_include_directories(logmatrix PRIVATE ${TBB_INCLUDE_DIRS})
@@ -19,7 +19,7 @@ if(HDF5_FOUND)
   
 add_executable (h5compress h5compress.cc)
 target_include_directories(h5compress PRIVATE ${HDF5_CXX_INCLUDE_DIRS})
-target_link_libraries (h5compress HLRcompress blas lapack ${HDF5_CXX_LIBRARIES})
+target_link_libraries (h5compress HLRcompress ${BLAS_LIBRARIES} ${HDF5_CXX_LIBRARIES})
 
 if(TBB_FOUND)
   target_include_directories(h5compress PRIVATE ${TBB_INCLUDE_DIRS})

@@ -23,9 +23,6 @@ private:
     // relative and absolute truncation accuracy
     double  _rel_eps, _abs_eps;
 
-    // defines fixed rank (negative means no limit; 0 = not set)
-    int     _rank;
-    
     // upper limit for rank (negative means no limit; 0 = not set)
     int     _max_rank;
     
@@ -39,21 +36,9 @@ public:
     // construct accuracy object for exact truncation
     //
     accuracy ()
-            : _rank(-1)
-            , _rel_eps(0.0)
+            : _rel_eps(0.0)
             , _max_rank(-1)
             , _abs_eps(0.0)
-    {}
-
-    //
-    // construct accuracy object for fixed rank truncation
-    //
-    accuracy ( const int     k,
-                const double  absolute_eps = 0.0 )
-            : _rank(std::max(0,k))
-            , _rel_eps(0.0)
-            , _max_rank(-1)
-            , _abs_eps(absolute_eps)
     {}
 
     //
@@ -61,8 +46,7 @@ public:
     //
     accuracy ( const double  relative_eps,
                const double  absolute_eps = 0.0 )
-            : _rank(-1)
-            , _rel_eps(relative_eps)
+            : _rel_eps(relative_eps)
             , _max_rank(-1)
             , _abs_eps(absolute_eps)
     {}
@@ -71,8 +55,7 @@ public:
     // copy constructor
     //
     accuracy ( const accuracy &  acc )
-            : _rank(-1)
-            , _rel_eps(0.0)
+            : _rel_eps(0.0)
             , _max_rank(-1)
             , _abs_eps(0.0)
     {
@@ -91,20 +74,9 @@ public:
     template < typename value_t >
     size_t  trunc_rank ( const blas::vector< value_t > &  sv ) const
     {
-        auto   eps = value_t(0);
-        idx_t  k   = idx_t( sv.length() );
-
         // initialise with either fixed rank or fixed accuracy
-        if ( is_fixed_rank() )
-        {
-            eps = std::numeric_limits< value_t >::epsilon() * std::abs( sv(0) );
-            k   = idx_t( std::min( sv.length(), rank() ) );
-        }// if
-        else
-        {
-            eps = value_t( rel_eps() ) * std::abs( sv(0) );
-            k   = idx_t( sv.length() );
-        }// else
+        auto  eps = value_t( rel_eps() ) * std::abs( sv(0) );
+        auto  k   = idx_t( sv.length() );
 
         // apply absolute lower limit for singular values
         eps = std::max( eps, value_t( abs_eps() ) );
@@ -150,9 +122,6 @@ public:
     // access accuracy data
     //
 
-    // return fixed rank (nonnegative!)
-    size_t  rank           () const { return std::max( 0, _rank ); }
-
     // return maximal rank (nonnegative!)
     size_t  max_rank       () const { return std::max( 0, _max_rank ); }
 
@@ -165,14 +134,8 @@ public:
     // return absolute accuracy
     double  abs_eps        () const { return _abs_eps; }
 
-    // return true if accuracy is fixed rank
-    bool    is_fixed_rank  () const { return _rank >= 0; }
-
-    // return true if accuracy is fixed precision
-    bool    is_fixed_prec  () const { return ! is_fixed_rank(); }
-
     // return true if accuracy is "exact"
-    bool    is_exact       () const { return ! is_fixed_rank() && (_rel_eps == 0.0) && (_abs_eps == 0.0); }
+    bool    is_exact       () const { return (_rel_eps == 0.0) && (_abs_eps == 0.0); }
 
     // set maximal rank in truncation
     void    set_max_rank   ( const int  k )
@@ -185,7 +148,6 @@ public:
     {
         _rel_eps  = ta._rel_eps;
         _abs_eps  = ta._abs_eps;
-        _rank     = ta._rank;
         _max_rank = ta._max_rank;
 
         return *this;
@@ -202,10 +164,9 @@ public:
 //
 inline
 accuracy
-fixed_prec ( const double  relative_eps,
-             const double  absolute_eps = 0.0 )
+relative_prec ( const double  relative_eps )
 {
-    return accuracy( relative_eps, absolute_eps );
+    return accuracy( relative_eps, 0.0 );
 }
 
 //
@@ -216,17 +177,6 @@ accuracy
 absolute_prec ( const double  absolute_eps )
 {
     return accuracy( 0.0, absolute_eps );
-}
-
-//
-// create accuracy object with fixed rank k
-//
-inline
-accuracy
-fixed_rank ( const int     k,
-             const double  absolute_eps = 0.0 )
-{
-    return accuracy( k, absolute_eps );
 }
 
 }// namespace hlrcompress

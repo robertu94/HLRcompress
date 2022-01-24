@@ -8,6 +8,8 @@
 
 #include <cstdio>
 #include <cmath>
+#include <chrono>
+#include <iomanip>
 
 #include <hlrcompress/config.h>
 
@@ -19,6 +21,7 @@
 #include <hlrcompress/compress.hh>
 #include <hlrcompress/approx/svd.hh>
 #include <hlrcompress/approx/rrqr.hh>
+#include <hlrcompress/hlr/error.hh>
 
 using namespace hlrcompress;
 
@@ -97,18 +100,38 @@ int
 main ( int      argc,
        char **  argv )
 {
-    const auto  n = ( argc > 1 ? atoi( argv[1] ) : 128 );
-    auto        M = gen_matrix_log< double >( n );
+    const auto  n     = ( argc > 1 ? atoi( argv[1] ) : 128 );
+    auto        M     = gen_matrix_log< double >( n );
+    const auto  acc   = ( argc > 2 ? atof( argv[2] ) : 1e-4 );
+    const auto  ntile = ( argc > 3 ? atoi( argv[3] ) : 32 );
+    auto        apx   = SVD();
 
-    auto  acc = fixed_prec( 1e-4 );
-    auto  apx = SVD();
-    auto  zM  = compress< double, decltype(apx) >( M, acc, apx, 32 );
+    #if USE_ZFP == 1
+    const auto  rate  = ( argc > 4 ? atoi( argv[4] ) : 32 );
+    auto        zconf = std::make_unique< zconfig_t >( zfp_config_rate( rate, false ) );
+    #else
+    auto        zconf = std::unique_ptr< zconfig_t >();
+    #endif
 
-    const auto  size_M  = M.byte_size();
-    const auto  size_zM = zM->byte_size();
-        
-    std::cout << "original:   " << size_M << std::endl;
-    std::cout << "compressed: " << size_zM << " / " << ( 100.0 * double(size_zM) / double(size_M) ) << "%" << std::endl;
+    auto        tic   = std::chrono::high_resolution_clock::now();
+    auto        zM    = compress< double, decltype(apx) >( M, acc, apx, ntile, zconf.get() );
+    auto        toc   = std::chrono::duration_cast< std::chrono::microseconds >( std::chrono::high_resolution_clock::now() - tic );
 
+    std::cout << "runtime:      " << toc.count() / 1e6 << " s" << std::endl;
+    
+    const auto  bs_M  = M.byte_size();
+    const auto  bs_zM = zM->byte_size();
+
+    std::cout << "storage " << std::endl
+              << "  original:   " << bs_M << std::endl
+              << "  compressed: " << bs_zM << " / " << ( 100.0 * double(bs_zM) / double(bs_M) ) << "%" << std::endl;
+
+    // needs to be uncompressed for error computation (for now)
+    zM->uncompress();
+    
+    auto  norm_M = blas::norm_F( M );
+    
+    std::cout << "error:        " << std::setprecision(4) << std::scientific << error_fro( M, *zM ) / norm_M << std::endl;
+    
     return 0;
 }

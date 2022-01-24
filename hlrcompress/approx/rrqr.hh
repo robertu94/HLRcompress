@@ -149,12 +149,6 @@ rrqr ( const blas::matrix< T > &  U,
                  std::move( blas::matrix< value_t >( nrows_V, 0 ) ) };
     }// if
 
-    if ( in_rank <= idx_t(acc.rank()) )
-    {
-        return { std::move( blas::copy( U ) ),
-                 std::move( blas::copy( V ) ) };
-    }// if
-
     //
     // if input rank is larger than maximal rank, use dense approximation
     //
