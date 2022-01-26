@@ -28,7 +28,7 @@ namespace hlrcompress { namespace blas {
 /////////////////////////////////////////////////////////////////
 
 // define 32-bit integers vs. 64-bit integers
-#if USE_ILP64 == 1
+#if HLRCOMPRESS_USE_ILP64 == 1
 using blas_int_t = long;   // ILP64
 #else
 using blas_int_t = int;    // LP64

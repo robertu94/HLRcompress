@@ -24,8 +24,24 @@ may configure their installation directories via
 cmake -DTBB_DIR=<...> -DZFP_DIR=<...> ..
 ```
 
+### BLAS/LAPACK
+
 Via *cmake* you can also define the BLAS/LAPACK implementation to be used with
-HLRcompress.
+HLRcompress. It is **important** to use a **sequential** version of BLAS/LAPACK as all
+parallelization is performed within HLRcompress. Any further parallelization on the block
+level usually results in a drastic drop of performance.
+
+With Intel MKL, the sequential version can be selected via
+
+```sh
+cmake -DBLA_VENDOR=Intel10_64lp_seq ..
+```
+
+or
+
+```sh
+cmake -DBLA_VENDOR=Intel10_64ilp_seq -DHLRCOMPRESS_USE_ILP64=ON ..
+```
 
 ## Examples
 

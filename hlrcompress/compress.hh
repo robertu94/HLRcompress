@@ -14,6 +14,7 @@
 
 #if HLRCOMPRESS_USE_TBB == 1
 #  include <tbb/parallel_for.h>
+#  include <tbb/parallel_reduce.h>
 #  include <tbb/blocked_range2d.h>
 #endif
 
@@ -90,7 +91,7 @@ compress ( const indexset &                 rowis,
         auto        sub_D        = tensor2< std::unique_ptr< block< value_t > > >( 2, 2 );
 
         #if HLRCOMPRESS_USE_TBB == 1
-        
+
         ::tbb::parallel_for(
             ::tbb::blocked_range2d< uint >( 0, 2, 0, 2 ),
             [&,ntile] ( const auto &  r )
@@ -261,7 +262,53 @@ compress ( const blas::matrix< value_t > &  D,
            const size_t                     ntile,
            const zconfig_t *                zconf = nullptr )
 {
+    //
+    // handle parallel computation of norm because BLAS should be sequential
+    //
+    
+    #if HLRCOMPRESS_USE_TBB == 1
+
+    using real_t = real_type_t< value_t >;
+    
+    const size_t  n  = D.nrows() * D.ncols();
+    auto          sq = tbb::parallel_reduce( tbb::blocked_range< size_t >( 0, n, 1024 ),
+                                             real_t(0),
+                                             [&D] ( const auto  r, const auto  val )
+                                             {
+                                                 auto  sq = val;
+                                                 
+                                                 for ( auto  i = r.begin(); i != r.end(); ++i )
+                                                     sq += D.data()[i] * D.data()[i];
+                                                 
+                                                 return sq;
+                                             },
+                                             std::plus< real_t >() );
+
+    const auto  norm_D = std::sqrt( sq );
+
+    #elif HLRCOMPRESS_USE_OPENMP == 1
+
+    using real_t = real_type_t< value_t >;
+    
+    const size_t  n  = D.nrows() * D.ncols();
+    auto          sq = real_t(0);
+    
+    #pragma omp parallel for schedule(static:1024) reduction(+: sq)
+    for ( size_t  i = 0; i < n; ++i )
+        sq += D.data()[i] * D.data()[i];
+
+    const auto  norm_D = std::sqrt( sq );
+
+    #else
+    
     const auto  norm_D = blas::norm_F( D );
+
+    #endif
+
+    //
+    // start compressing with per-block accuracy
+    //
+    
     const auto  delta  = norm_D * rel_prec / D.nrows();
     auto        acc_D  = adaptive_accuracy( delta );
     auto        M      = std::unique_ptr< block< value_t > >();
