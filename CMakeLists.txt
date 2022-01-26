@@ -65,7 +65,7 @@ else()
 endif()
 
 find_package(ZFP)
-find_package(HDF5 COMPONENTS CXX)
+find_package(HDF5 COMPONENTS C)
 find_package(CUDA)
 
 message( STATUS "cuSolver: ${CUDA_cusolver_LIBRARY}")

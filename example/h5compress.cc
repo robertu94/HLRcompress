@@ -12,7 +12,7 @@
 #include <chrono>
 #include <iomanip>
 
-#include <H5Cpp.h>
+#include <hdf5.h>
 
 #include <hlrcompress/compress.hh>
 #include <hlrcompress/approx/svd.hh>

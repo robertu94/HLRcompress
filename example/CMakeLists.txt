@@ -23,8 +23,8 @@ target_include_directories(logmatrix PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
 if(HDF5_FOUND)
   
 add_executable (h5compress h5compress.cc)
-target_include_directories(h5compress PRIVATE ${HDF5_CXX_INCLUDE_DIRS})
-target_link_libraries (h5compress HLRcompress ${BLAS_LIBRARIES} ${HDF5_CXX_LIBRARIES})
+target_include_directories(h5compress PRIVATE ${HDF5_INCLUDE_DIRS})
+target_link_libraries (h5compress HLRcompress ${BLAS_LIBRARIES} ${HDF5_LIBRARIES})
 
 if(TBB_FOUND)
   target_include_directories(h5compress PRIVATE ${TBB_INCLUDE_DIRS})

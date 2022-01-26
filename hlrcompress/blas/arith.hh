@@ -8,6 +8,7 @@
 // Copyright   : Max Planck Institute MIS 2004-2022. All Rights Reserved.
 //
 
+#include <vector>
 #include <algorithm>
 
 #include <hlrcompress/blas/blas_def.hh>
