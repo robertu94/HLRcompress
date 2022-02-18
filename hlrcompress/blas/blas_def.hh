@@ -29,13 +29,13 @@ namespace hlrcompress { namespace blas {
 
 // define 32-bit integers vs. 64-bit integers
 #if HLRCOMPRESS_USE_ILP64 == 1
-using blas_int_t = long;   // ILP64
+using int_t = long;   // ILP64
 #else
-using blas_int_t = int;    // LP64
+using int_t = int;    // LP64
 #endif
 
 // to query optimal workspace in LAPACK
-constexpr blas_int_t  LAPACK_WS_QUERY = -1;
+constexpr int_t  LAPACK_WS_QUERY = -1;
 
 /////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
@@ -59,133 +59,133 @@ extern "C" {
 // set (part of) A to alpha/beta
 CFUNCDECL
 void
-slaset_  ( const char *       UPLO,
-           const blas_int_t * M,
-           const blas_int_t * N,
-           const float *      ALPHA,
-           const float *      BETA,
-           float *            A,
-           const blas_int_t * LDA   );
+slaset_  ( const char *  UPLO,
+           const int_t * M,
+           const int_t * N,
+           const float * ALPHA,
+           const float * BETA,
+           float *       A,
+           const int_t * LDA   );
 
 // copy (part of) A to B
 CFUNCDECL
 void
-slacpy_  ( const char *       UPLO,
-           const blas_int_t * M,
-           const blas_int_t * N,
-           const float *      A,
-           const blas_int_t * LDA,
-           float *            B,
-           const blas_int_t * LDB  );
+slacpy_  ( const char *  UPLO,
+           const int_t * M,
+           const int_t * N,
+           const float * A,
+           const int_t * LDA,
+           float *       B,
+           const int_t * LDB  );
 
 // compute dotproduct between x and y
 CFUNCDECL
 float
-sdot_ ( const blas_int_t * n,
-        const float *      dx,
-        const blas_int_t * incx,
-        const float *      dy,
-        const blas_int_t * incy);
+sdot_ ( const int_t * n,
+        const float * dx,
+        const int_t * incx,
+        const float * dy,
+        const int_t * incy);
 
 // copy vector x into vector y
 CFUNCDECL
 void
-scopy_ ( const blas_int_t * n,
-         const float *      dx,
-         const blas_int_t * incx,
-         float       *      dy,
-         const blas_int_t * incy);
+scopy_ ( const int_t * n,
+         const float * dx,
+         const int_t * incx,
+         float       * dy,
+         const int_t * incy);
 
 // compute y = y + a * x
 CFUNCDECL
 void
-saxpy_ ( const blas_int_t * n,
-         const float *      da,
-         const float *      dx,
-         const blas_int_t * incx,
-         float *            dy,
-         const blas_int_t * incy );
+saxpy_ ( const int_t * n,
+         const float * da,
+         const float * dx,
+         const int_t * incx,
+         float *       dy,
+         const int_t * incy );
 
 // compute sum of absolut values of x
 CFUNCDECL
 float
-sasum_  ( const blas_int_t * n,
-          const float *      dx,
-          const blas_int_t * incx );
+sasum_  ( const int_t * n,
+          const float * dx,
+          const int_t * incx );
 
 // return euclidean norm of x
 CFUNCDECL
 float
-snrm2_  ( const blas_int_t * n,
-          const float *      dx,
-          const blas_int_t * incx );
+snrm2_  ( const int_t * n,
+          const float * dx,
+          const int_t * incx );
 
 // scale x by a
 CFUNCDECL
 void
-sscal_ ( const blas_int_t * n,
-         const float *      da,
-         float *            dx,
-         const blas_int_t * incx );
+sscal_ ( const int_t * n,
+         const float * da,
+         float *       dx,
+         const int_t * incx );
 
 // interchange x and y
 CFUNCDECL
 void
-sswap_ ( const blas_int_t * n,
-         float *            dx,
-         const blas_int_t * incx,
-         float *            dy,
-         const blas_int_t * incy );
+sswap_ ( const int_t * n,
+         float *       dx,
+         const int_t * incx,
+         float *       dy,
+         const int_t * incy );
 
 // finds index with element having maximal absolut value
 CFUNCDECL
-blas_int_t
-isamax_ ( const blas_int_t * n,
+int_t
+isamax_ ( const int_t * n,
           const float   *,
-          const blas_int_t * );
+          const int_t * );
 
 // y = alpha A x + beta y
 CFUNCDECL
 void
-sgemv_ ( const char *       trans,
-         const blas_int_t * M,
-         const blas_int_t * N,
-         const float *      alpha,
-         const float *      A,
-         const blas_int_t * lda,
-         const float *      dx,
-         const blas_int_t * incx,
-         const float *      beta,
-         float *            dy,
-         const blas_int_t * incy );
+sgemv_ ( const char *  trans,
+         const int_t * M,
+         const int_t * N,
+         const float * alpha,
+         const float * A,
+         const int_t * lda,
+         const float * dx,
+         const int_t * incx,
+         const float * beta,
+         float *       dy,
+         const int_t * incy );
 
 // compute c = alpha * a * b + beta * c
 CFUNCDECL
 void
-sgemm_ ( const char *           transa,
-         const char *           transb,
-         const blas_int_t *     n,
-         const blas_int_t *     m,
-         const blas_int_t *     k,
-         const float *          alpha,
-         const float *          a,
-         const blas_int_t *     lda,
-         const float *          b,
-         const blas_int_t *     ldb,
-         const float *          beta,
-         float *                c,
-         const blas_int_t *     ldc );
+sgemm_ ( const char *  transa,
+         const char *  transb,
+         const int_t * n,
+         const int_t * m,
+         const int_t * k,
+         const float * alpha,
+         const float * a,
+         const int_t * lda,
+         const float * b,
+         const int_t * ldb,
+         const float * beta,
+         float *       c,
+         const int_t * ldc );
 
 // computes y = op(A)*x for upper/lower triangular A (y overwrites x)
-blas_int_t
-strmv_ ( const char *           uplo,
-         const char *           trans,
-         const char *           diag,
-         const blas_int_t *     n,
-         const float *          A,
-         const blas_int_t *     ldA,
-         float *                x,
-         const blas_int_t *     incx );
+int_t
+strmv_ ( const char *  uplo,
+         const char *  trans,
+         const char *  diag,
+         const int_t * n,
+         const float * A,
+         const int_t * ldA,
+         float *       x,
+         const int_t * incx );
 
 // computes B = alpha * op(A) * B or B = alpha * B * op(A)
 CFUNCDECL
@@ -194,53 +194,53 @@ strmm_ ( const char *           side,
          const char *           uplo,
          const char *           transa,
          const char *           diag,
-         const blas_int_t *     n,
-         const blas_int_t *     m,
+         const int_t *     n,
+         const int_t *     m,
          const float *          alpha,
          const float *          A,
-         const blas_int_t *     lda,
+         const int_t *     lda,
          float *                B,
-         const blas_int_t *     ldb );
+         const int_t *     ldb );
 
 // solves A x = b or A^T x = b with triangular A
 CFUNCDECL
 void
-strsv_ ( const char *           uplo,
-         const char *           trans,
-         const char *           diag,
-         const blas_int_t *     n,
-         const float *          A,
-         const blas_int_t *     lda,
-         float *                x,
-         const blas_int_t *     incx );
+strsv_ ( const char *  uplo,
+         const char *  trans,
+         const char *  diag,
+         const int_t * n,
+         const float * A,
+         const int_t * lda,
+         float *       x,
+         const int_t * incx );
 
 // solves A X = B or A^T X = B with triangular A
 CFUNCDECL
 void
-strsm_ ( const char *           side,
-         const char *           uplo,
-         const char *           trans,
-         const char *           diag,
-         const blas_int_t *     n,
-         const blas_int_t *     m,
-         const float *          alpha,
-         const float *          A,
-         const blas_int_t *     lda,
-         float *                B,
-         const blas_int_t *     ldb );
+strsm_ ( const char *  side,
+         const char *  uplo,
+         const char *  trans,
+         const char *  diag,
+         const int_t * n,
+         const int_t * m,
+         const float * alpha,
+         const float * A,
+         const int_t * lda,
+         float *       B,
+         const int_t * ldb );
 
 // A = alpha * x * y^T + A, A \in \R^{m x n}
 CFUNCDECL
 void
-sger_ ( const blas_int_t *      m,
-        const blas_int_t *      n,
-        const float *           alpha,
-        const float *           x,
-        const blas_int_t *      incx,
-        const float *           y,
-        const blas_int_t *      incy,
-        float *                 A,
-        const blas_int_t *      lda );
+sger_ ( const int_t * m,
+        const int_t * n,
+        const float * alpha,
+        const float * x,
+        const int_t * incx,
+        const float * y,
+        const int_t * incy,
+        float *       A,
+        const int_t * lda );
 
 ///////////////////////////////////////////////////////////////////
 //
@@ -251,188 +251,188 @@ sger_ ( const blas_int_t *      m,
 // set (part of) A to alpha/beta
 CFUNCDECL
 void
-dlaset_  ( const char *         UPLO,
-           const blas_int_t *   M,
-           const blas_int_t *   N,
-           const double *       ALPHA,
-           const double *       BETA,
-           double *             A,
-           const blas_int_t *   LDA   );
+dlaset_  ( const char *   UPLO,
+           const int_t *  M,
+           const int_t *  N,
+           const double * ALPHA,
+           const double * BETA,
+           double *       A,
+           const int_t *  LDA   );
 
 // copy (part of) A to B
 CFUNCDECL
 void
-dlacpy_  ( const char *         UPLO,
-           const blas_int_t *   M,
-           const blas_int_t *   N,
-           const double *       A,
-           const blas_int_t *   LDA,
-           double *             B,
-           const blas_int_t *   LDB  );
+dlacpy_  ( const char *   UPLO,
+           const int_t *  M,
+           const int_t *  N,
+           const double * A,
+           const int_t *  LDA,
+           double *       B,
+           const int_t *  LDB  );
 
 // compute dotproduct between x and y
 CFUNCDECL
 double
-ddot_ ( const blas_int_t *      n,
-        const double *          dx,
-        const blas_int_t *      incx,
-        const double *          dy,
-        const blas_int_t *      incy);
+ddot_ ( const int_t *  n,
+        const double * dx,
+        const int_t *  incx,
+        const double * dy,
+        const int_t *  incy);
     
 // copy vector x into vector y
 CFUNCDECL
 void
-dcopy_ ( const blas_int_t *     n,
-         const double *         dx,
-         const blas_int_t *     incx,
-         double       *         dy,
-         const blas_int_t *     incy);
+dcopy_ ( const int_t *  n,
+         const double * dx,
+         const int_t *  incx,
+         double       * dy,
+         const int_t *  incy);
 
 // compute y = y + a * x
 CFUNCDECL
 void
-daxpy_ ( const blas_int_t *     n,
-         const double *         da,
-         const double *         dx,
-         const blas_int_t *     incx,
-         double *               dy,
-         const blas_int_t *     incy );
+daxpy_ ( const int_t *  n,
+         const double * da,
+         const double * dx,
+         const int_t *  incx,
+         double *       dy,
+         const int_t *  incy );
 
 // compute sum of absolut values of x
 CFUNCDECL
 double
-dasum_  ( const blas_int_t *    n,
-          const double *        dx,
-          const blas_int_t *    incx );
+dasum_  ( const int_t *  n,
+          const double * dx,
+          const int_t *  incx );
 
 // return euclidean norm of x
 CFUNCDECL
 double
-dnrm2_  ( const blas_int_t *    n,
-          const double *        dx,
-          const blas_int_t *    incx );
+dnrm2_  ( const int_t *  n,
+          const double * dx,
+          const int_t *  incx );
 
 // scale x by a
 CFUNCDECL
 void
-dscal_ ( const blas_int_t *     n,
-         const double *         da,
-         double *               dx,
-         const blas_int_t *     incx );
+dscal_ ( const int_t *  n,
+         const double * da,
+         double *       dx,
+         const int_t *  incx );
 
 // interchange x and y
 CFUNCDECL
 void
-dswap_ ( const blas_int_t *     n,
-         double *               dx,
-         const blas_int_t *     incx,
-         double *               dy,
-         const blas_int_t *     incy );
+dswap_ ( const int_t * n,
+         double *      dx,
+         const int_t * incx,
+         double *      dy,
+         const int_t * incy );
 
 // finds index with element having maximal absolut value
 CFUNCDECL
-blas_int_t
-idamax_ ( const blas_int_t *    n,
-          const double   *,
-          const blas_int_t * );
+int_t
+idamax_ ( const int_t *    n,
+          const double *,
+          const int_t * );
     
 // y = alpha A x + beta y
 CFUNCDECL
 void
-dgemv_ ( const char *           trans,
-         const blas_int_t *     M,
-         const blas_int_t *     N,
-         const double *         alpha,
-         const double *         A,
-         const blas_int_t *     lda,
-         const double *         dx,
-         const blas_int_t *     incx,
-         const double *         beta,
-         double *               dy,
-         const blas_int_t *     incy );
+dgemv_ ( const char *   trans,
+         const int_t *  M,
+         const int_t *  N,
+         const double * alpha,
+         const double * A,
+         const int_t *  lda,
+         const double * dx,
+         const int_t *  incx,
+         const double * beta,
+         double *       dy,
+         const int_t *  incy );
 
 // compute c = alpha * a * b + beta * c
 CFUNCDECL
 void
-dgemm_ ( const char *           transa,
-         const char *           transb,
-         const blas_int_t *     n,
-         const blas_int_t *     m,
-         const blas_int_t *     k,
-         const double *         alpha,
-         const double *         a,
-         const blas_int_t *     lda,
-         const double *         b,
-         const blas_int_t *     ldb,
-         const double *         beta,
-         double *               c,
-         const blas_int_t *     ldc );
+dgemm_ ( const char *   transa,
+         const char *   transb,
+         const int_t *  n,
+         const int_t *  m,
+         const int_t *  k,
+         const double * alpha,
+         const double * a,
+         const int_t *  lda,
+         const double * b,
+         const int_t *  ldb,
+         const double * beta,
+         double *       c,
+         const int_t *  ldc );
 
 // computes y = op(A)*x for upper/lower triangular A (y overwrites x)
 void
-dtrmv_ ( const char *           uplo,
-         const char *           trans,
-         const char *           diag,
-         const blas_int_t *     n,
-         const double *         A,
-         const blas_int_t *     ldA,
-         double *               x,
-         const blas_int_t *     incx );
+dtrmv_ ( const char *   uplo,
+         const char *   trans,
+         const char *   diag,
+         const int_t *  n,
+         const double * A,
+         const int_t *  ldA,
+         double *       x,
+         const int_t *  incx );
 
 // computes B = alpha * op(A) * B or B = alpha * B * op(A)
 CFUNCDECL
 void
-dtrmm_ ( const char *           side,
-         const char *           uplo,
-         const char *           transa,
-         const char *           diag,
-         const blas_int_t *     n,
-         const blas_int_t *     m,
-         const double *         alpha,
-         const double *         A,
-         const blas_int_t *     lda,
-         double *               B,
-         const blas_int_t *     ldb );
+dtrmm_ ( const char *   side,
+         const char *   uplo,
+         const char *   transa,
+         const char *   diag,
+         const int_t *  n,
+         const int_t *  m,
+         const double * alpha,
+         const double * A,
+         const int_t *  lda,
+         double *       B,
+         const int_t *  ldb );
 
 // solves A x = b or A^T x = b with triangular A
 CFUNCDECL
 void
-dtrsv_ ( const char *           uplo,
-         const char *           trans,
-         const char *           diag,
-         const blas_int_t *     n,
-         const double *         A,
-         const blas_int_t *     lda,
-         double *               x,
-         const blas_int_t *     incx );
+dtrsv_ ( const char *   uplo,
+         const char *   trans,
+         const char *   diag,
+         const int_t *  n,
+         const double * A,
+         const int_t *  lda,
+         double *       x,
+         const int_t *  incx );
     
 // solves A X = B or A^T X = B with triangular A
 CFUNCDECL
 void
-dtrsm_ ( const char *           side,
-         const char *           uplo,
-         const char *           trans,
-         const char *           diag,
-         const blas_int_t *     n,
-         const blas_int_t *     m,
-         const double *         alpha,
-         const double *         A,
-         const blas_int_t *     lda,
-         double *               B,
-         const blas_int_t *     ldb );
+dtrsm_ ( const char *   side,
+         const char *   uplo,
+         const char *   trans,
+         const char *   diag,
+         const int_t *  n,
+         const int_t *  m,
+         const double * alpha,
+         const double * A,
+         const int_t *  lda,
+         double *       B,
+         const int_t *  ldb );
 
 // A = alpha * x * y^T + A, A \in \R^{m x n}
 CFUNCDECL
 void
-dger_ ( const blas_int_t *      m,
-        const blas_int_t *      n,
-        const double *          alpha,
-        const double *          x,
-        const blas_int_t *      incx,
-        const double *          y,
-        const blas_int_t *      incy,
-        double *                A,
-        const blas_int_t *      lda );
+dger_ ( const int_t *  m,
+        const int_t *  n,
+        const double * alpha,
+        const double * x,
+        const int_t *  incx,
+        const double * y,
+        const int_t *  incy,
+        double *       A,
+        const int_t *  lda );
 
 ///////////////////////////////////////////////////////////////////
 //
@@ -443,209 +443,209 @@ dger_ ( const blas_int_t *      m,
 // set (part of) A to alpha/beta
 CFUNCDECL
 void
-claset_  ( const char *                 UPLO,
-           const blas_int_t *           M,
-           const blas_int_t *           N,
-           const std::complex<float> *  ALPHA,
-           const std::complex<float> *  BETA,
-           std::complex<float> *        A,
-           const blas_int_t *           LDA   );
+claset_  ( const char *                UPLO,
+           const int_t *               M,
+           const int_t *               N,
+           const std::complex<float> * ALPHA,
+           const std::complex<float> * BETA,
+           std::complex<float> *       A,
+           const int_t *               LDA   );
 
 // copy (part of) A to B
 CFUNCDECL
 void
-clacpy_  ( const char *                 UPLO,
-           const blas_int_t *           M,
-           const blas_int_t *           N,
-           const std::complex<float> *  A,
-           const blas_int_t *           LDA,
-           std::complex<float> *        B,
-           const blas_int_t *           LDB  );
+clacpy_  ( const char *                UPLO,
+           const int_t *               M,
+           const int_t *               N,
+           const std::complex<float> * A,
+           const int_t *               LDA,
+           std::complex<float> *       B,
+           const int_t *               LDB  );
 
 // compute dotproduct between x and y
 CFUNCDECL
 void
-xcdotu_ ( const blas_int_t *            n,
-          const std::complex<float> *   dx,
-          const blas_int_t *            incx,
-          const std::complex<float> *   dy,
-          const blas_int_t *            incy,
-          std::complex<float> *         retval );
+xcdotu_ ( const int_t *               n,
+          const std::complex<float> * dx,
+          const int_t *               incx,
+          const std::complex<float> * dy,
+          const int_t *               incy,
+          std::complex<float> *       retval );
 CFUNCDECL
 void
-xcdotc_ ( const blas_int_t *            n,
-          const std::complex<float> *   dx,
-          const blas_int_t *            incx,
-          const std::complex<float> *   dy,
-          const blas_int_t *            incy,
-          std::complex<float> *         retval );
+xcdotc_ ( const int_t *               n,
+          const std::complex<float> * dx,
+          const int_t *               incx,
+          const std::complex<float> * dy,
+          const int_t *               incy,
+          std::complex<float> *       retval );
 
 // copy vector x into vector y
 CFUNCDECL
 void
-ccopy_ ( const blas_int_t *             n,
-         const std::complex<float> *    dx,
-         const blas_int_t *             incx,
-         std::complex<float> *          dy,
-         const blas_int_t *             incy);
+ccopy_ ( const int_t *               n,
+         const std::complex<float> * dx,
+         const int_t *               incx,
+         std::complex<float> *       dy,
+         const int_t *               incy);
 
 // compute y = y + a * x
 CFUNCDECL
 void
-caxpy_ ( const blas_int_t *             n,
-         const std::complex<float> *    da,
-         const std::complex<float> *    dx,
-         const blas_int_t *             incx,
-         std::complex<float> *          dy,
-         const blas_int_t *             incy );
+caxpy_ ( const int_t *               n,
+         const std::complex<float> * da,
+         const std::complex<float> * dx,
+         const int_t *               incx,
+         std::complex<float> *       dy,
+         const int_t *               incy );
 
 // compute euclidean norm
 CFUNCDECL
 float
-scnrm2_ ( const blas_int_t *            n,
-          const std::complex<float> *   x,
-          const blas_int_t *            incx );
+scnrm2_ ( const int_t *               n,
+          const std::complex<float> * x,
+          const int_t *               incx );
 
 // scale x by a
 CFUNCDECL
 void
-cscal_  ( const blas_int_t *            n,
-          const std::complex<float> *   da,
-          std::complex<float> *         dx,
-          const blas_int_t *            incx );
+cscal_  ( const int_t *               n,
+          const std::complex<float> * da,
+          std::complex<float> *       dx,
+          const int_t *               incx );
 CFUNCDECL
 void
-csscal_ ( const blas_int_t *            n,
-          const float *                 da,
-          std::complex<float> *         dx,
-          const blas_int_t *            incx );
+csscal_ ( const int_t *         n,
+          const float *         da,
+          std::complex<float> * dx,
+          const int_t *         incx );
 
 // interchange x and y
 CFUNCDECL
 void
-cswap_ ( const blas_int_t *     n,
-         std::complex<float> *  dx,
-         const blas_int_t *     incx,
-         std::complex<float> *  dy,
-         const blas_int_t *     incy );
+cswap_ ( const int_t *         n,
+         std::complex<float> * dx,
+         const int_t *         incx,
+         std::complex<float> * dy,
+         const int_t *         incy );
 
 // finds index with element having maximal absolut value
 CFUNCDECL
-blas_int_t
-icamax_ ( const blas_int_t *    n,
+int_t
+icamax_ ( const int_t * n,
           const std::complex<float> *,
-          const blas_int_t * );
+          const int_t * );
 
 // y = alpha A x + beta y
 CFUNCDECL
 void
-cgemv_ ( const char *                   trans,
-         const blas_int_t *             M,
-         const blas_int_t *             N,
-         const std::complex<float> *    alpha,
-         const std::complex<float> *    A,
-         const blas_int_t *             lda,
-         const std::complex<float> *    dx,
-         const blas_int_t *             incx,
-         const std::complex<float> *    beta,
-         std::complex<float> *          dy,
-         const blas_int_t *             incy );
+cgemv_ ( const char *                trans,
+         const int_t *               M,
+         const int_t *               N,
+         const std::complex<float> * alpha,
+         const std::complex<float> * A,
+         const int_t *               lda,
+         const std::complex<float> * dx,
+         const int_t *               incx,
+         const std::complex<float> * beta,
+         std::complex<float> *       dy,
+         const int_t *               incy );
 
 // compute c = alpha * a * b + beta * c
 CFUNCDECL
 void
-cgemm_ ( const char *                   transa,
-         const char *                   transb,
-         const blas_int_t *             n,
-         const blas_int_t *             m,
-         const blas_int_t *             k,
-         const std::complex<float> *    alpha,
-         const std::complex<float> *    a,
-         const blas_int_t *             lda,
-         const std::complex<float> *    b,
-         const blas_int_t *             ldb,
-         const std::complex<float> *    beta,
-         std::complex<float> *          c,
-         const blas_int_t *             ldc );
+cgemm_ ( const char *                transa,
+         const char *                transb,
+         const int_t *               n,
+         const int_t *               m,
+         const int_t *               k,
+         const std::complex<float> * alpha,
+         const std::complex<float> * a,
+         const int_t *               lda,
+         const std::complex<float> * b,
+         const int_t *               ldb,
+         const std::complex<float> * beta,
+         std::complex<float> *       c,
+         const int_t *               ldc );
 
 // computes y = op(A)*x for upper/lower triangular A (y overwrites x)
 void
-ctrmv_ ( const char *                   uplo,
-         const char *                   trans,
-         const char *                   diag,
-         const blas_int_t *             n,
-         const std::complex<float> *    A,
-         const blas_int_t *             ldA,
-         std::complex<float> *          x,
-         const blas_int_t *             incx );
+ctrmv_ ( const char *                uplo,
+         const char *                trans,
+         const char *                diag,
+         const int_t *               n,
+         const std::complex<float> * A,
+         const int_t *               ldA,
+         std::complex<float> *       x,
+         const int_t *               incx );
 
 // computes B = alpha * op(A) * B or B = alpha * B * op(A)
 CFUNCDECL
 void
-ctrmm_ ( const char *                   side,
-         const char *                   uplo,
-         const char *                   transa,
-         const char *                   diag,
-         const blas_int_t *             m,
-         const blas_int_t *             n,
-         const std::complex<float> *    alpha,
-         const std::complex<float> *    a,
-         const blas_int_t *             lda,
-         std::complex<float> *               b,
-         const blas_int_t *             ldb );
+ctrmm_ ( const char *                side,
+         const char *                uplo,
+         const char *                transa,
+         const char *                diag,
+         const int_t *               m,
+         const int_t *               n,
+         const std::complex<float> * alpha,
+         const std::complex<float> * a,
+         const int_t *               lda,
+         std::complex<float> *       b,
+         const int_t *               ldb );
 
 // solves A x = b or A^T x = b with triangular A
 CFUNCDECL
 void
-ctrsv_ ( const char *                   uplo,
-         const char *                   trans,
-         const char *                   diag,
-         const blas_int_t *             n,
-         const std::complex<float> *    a,
-         const blas_int_t *             lda,
-         std::complex<float> *          x,
-         const blas_int_t *             incx );
+ctrsv_ ( const char *                uplo,
+         const char *                trans,
+         const char *                diag,
+         const int_t *               n,
+         const std::complex<float> * a,
+         const int_t *               lda,
+         std::complex<float> *       x,
+         const int_t *               incx );
 
 // solves A X = B or A^T X = B with triangular A
 CFUNCDECL
 void
-ctrsm_ ( const char *                   side,
-         const char *                   uplo,
-         const char *                   trans,
-         const char *                   diag,
-         const blas_int_t *             n,
-         const blas_int_t *             m,
-         const std::complex< float > *  alpha,
-         const std::complex< float > *  A,
-         const blas_int_t *             lda,
-         std::complex< float > *        B,
-         const blas_int_t *             ldb );
+ctrsm_ ( const char *                  side,
+         const char *                  uplo,
+         const char *                  trans,
+         const char *                  diag,
+         const int_t *                 n,
+         const int_t *                 m,
+         const std::complex< float > * alpha,
+         const std::complex< float > * A,
+         const int_t *                 lda,
+         std::complex< float > *       B,
+         const int_t *                 ldb );
 
 // rank-1 update: A = alpha * x * y^T + A
 CFUNCDECL
 void
-cgeru_ ( const blas_int_t *             m,
-         const blas_int_t *             n,
-         const std::complex<float> *    alpha,
-         const std::complex<float> *    x,
-         const blas_int_t *             incx,
-         const std::complex<float> *    y,
-         const blas_int_t *             incy,
-         std::complex<float> *          A,
-         const blas_int_t *             lda );
+cgeru_ ( const int_t *               m,
+         const int_t *               n,
+         const std::complex<float> * alpha,
+         const std::complex<float> * x,
+         const int_t *               incx,
+         const std::complex<float> * y,
+         const int_t *               incy,
+         std::complex<float> *       A,
+         const int_t *               lda );
 
 // rank-1 update: A = alpha * x * conj(y^T) + A
 CFUNCDECL
 void
-cgerc_ ( const blas_int_t *             m,
-         const blas_int_t *             n,
-         const std::complex<float> *    alpha,
-         const std::complex<float> *    x,
-         const blas_int_t *             incx,
-         const std::complex<float> *    y,
-         const blas_int_t *             incy,
-         std::complex<float> *          A,
-         const blas_int_t *             lda );
+cgerc_ ( const int_t *               m,
+         const int_t *               n,
+         const std::complex<float> * alpha,
+         const std::complex<float> * x,
+         const int_t *               incx,
+         const std::complex<float> * y,
+         const int_t *               incy,
+         std::complex<float> *       A,
+         const int_t *               lda );
 
 ///////////////////////////////////////////////////////////////////
 //
@@ -657,167 +657,167 @@ cgerc_ ( const blas_int_t *             m,
 CFUNCDECL
 void
 zlaset_  ( const char *                 UPLO,
-           const blas_int_t *           M,
-           const blas_int_t *           N,
+           const int_t *                M,
+           const int_t *                N,
            const std::complex<double> * ALPHA,
            const std::complex<double> * BETA,
            std::complex<double> *       A,
-           const blas_int_t *           LDA   );
+           const int_t *                LDA   );
 
 // copy (part of) A to B
 CFUNCDECL
 void
 zlacpy_  ( const char *                 UPLO,
-           const blas_int_t *           M,
-           const blas_int_t *           N,
+           const int_t *                M,
+           const int_t *                N,
            const std::complex<double> * A,
-           const blas_int_t *           LDA,
+           const int_t *                LDA,
            std::complex<double> *       B,
-           const blas_int_t *           LDB  );
+           const int_t *                LDB  );
 
 // compute dotproduct between x and y
 CFUNCDECL
 void
-xzdotu_ ( const blas_int_t *            n,
-          const std::complex<double> *  dx,
-          const blas_int_t *            incx,
-          const std::complex<double> *  dy,
-          const blas_int_t *            incy,
-          std::complex<double> *        retval );
+xzdotu_ ( const int_t *                n,
+          const std::complex<double> * dx,
+          const int_t *                incx,
+          const std::complex<double> * dy,
+          const int_t *                incy,
+          std::complex<double> *       retval );
 CFUNCDECL
 void
-xzdotc_ ( const blas_int_t *            n,
-          const std::complex<double> *  dx,
-          const blas_int_t *            incx,
-          const std::complex<double> *  dy,
-          const blas_int_t *            incy,
-          std::complex<double> *        retval );
+xzdotc_ ( const int_t *                n,
+          const std::complex<double> * dx,
+          const int_t *                incx,
+          const std::complex<double> * dy,
+          const int_t *                incy,
+          std::complex<double> *       retval );
 
 // copy vector x into vector y
 CFUNCDECL
 void
-zcopy_ ( const blas_int_t *             n,
-         const std::complex<double> *   dx,
-         const blas_int_t *             incx,
-         std::complex<double>       *   dy,
-         const blas_int_t *             incy);
+zcopy_ ( const int_t *                n,
+         const std::complex<double> * dx,
+         const int_t *                incx,
+         std::complex<double>       * dy,
+         const int_t *                incy);
 
 // compute y = y + a * x
 CFUNCDECL
 void
-zaxpy_ ( const blas_int_t *             n,
-         const std::complex<double> *   da,
-         const std::complex<double> *   dx,
-         const blas_int_t *             incx,
-         std::complex<double> *         dy,
-         const blas_int_t *             incy );
+zaxpy_ ( const int_t *                n,
+         const std::complex<double> * da,
+         const std::complex<double> * dx,
+         const int_t *                incx,
+         std::complex<double> *       dy,
+         const int_t *                incy );
 
 // compute euclidean norm
 CFUNCDECL
 double
-dznrm2_ ( const blas_int_t *            n,
-          const std::complex<double> *  x,
-          const blas_int_t *            incx );
+dznrm2_ ( const int_t *                n,
+          const std::complex<double> * x,
+          const int_t *                incx );
 
 // scale x by a
 CFUNCDECL
 void
-zscal_  ( const blas_int_t *            n,
-          const std::complex<double> *  da,
-          std::complex<double> *        dx,
-          const blas_int_t *            incx );
+zscal_  ( const int_t *                n,
+          const std::complex<double> * da,
+          std::complex<double> *       dx,
+          const int_t *                incx );
 CFUNCDECL
 void
-zdscal_ ( const blas_int_t *            n,
-          const double *                da,
-          std::complex<double> *        dx,
-          const blas_int_t *            incx );
+zdscal_ ( const int_t *                n,
+          const double *               da,
+          std::complex<double> *       dx,
+          const int_t *                incx );
 
 // interchange x and y
 CFUNCDECL
 void
-zswap_ ( const blas_int_t *             n,
-         std::complex<double> *         dx,
-         const blas_int_t *             incx,
-         std::complex<double> *         dy,
-         const blas_int_t *             incy );
+zswap_ ( const int_t *          n,
+         std::complex<double> * dx,
+         const int_t *          incx,
+         std::complex<double> * dy,
+         const int_t *          incy );
 
 // finds index with element having maximal absolut value
 CFUNCDECL
-blas_int_t
-izamax_ ( const blas_int_t *            n,
+int_t
+izamax_ ( const int_t * n,
           const std::complex<double> *,
-          const blas_int_t * );
+          const int_t * );
     
 // y = alpha A x + beta y
 CFUNCDECL
 void
-zgemv_ ( const char *                   trans,
-         const blas_int_t *             M,
-         const blas_int_t *             N,
-         const std::complex<double> *   alpha,
-         const std::complex<double> *   A,
-         const blas_int_t *             lda,
-         const std::complex<double> *   dx,
-         const blas_int_t *             incx,
-         const std::complex<double> *   beta,
-         std::complex<double> *         dy,
-         const blas_int_t *             incy );
+zgemv_ ( const char *                 trans,
+         const int_t *                M,
+         const int_t *                N,
+         const std::complex<double> * alpha,
+         const std::complex<double> * A,
+         const int_t *                lda,
+         const std::complex<double> * dx,
+         const int_t *                incx,
+         const std::complex<double> * beta,
+         std::complex<double> *       dy,
+         const int_t *                incy );
 
 // compute c = alpha * a * b + beta * c
 CFUNCDECL
 void
-zgemm_ ( const char *                   transa,
-         const char *                   transb,
-         const blas_int_t *             n,
-         const blas_int_t *             m,
-         const blas_int_t *             k,
-         const std::complex<double> *   alpha,
-         const std::complex<double> *   a,
-         const blas_int_t *             lda,
-         const std::complex<double> *   b,
-         const blas_int_t *             ldb,
-         const std::complex<double> *   beta,
-         std::complex<double> *         c,
-         const blas_int_t *             ldc );
+zgemm_ ( const char *                 transa,
+         const char *                 transb,
+         const int_t *                n,
+         const int_t *                m,
+         const int_t *                k,
+         const std::complex<double> * alpha,
+         const std::complex<double> * a,
+         const int_t *                lda,
+         const std::complex<double> * b,
+         const int_t *                ldb,
+         const std::complex<double> * beta,
+         std::complex<double> *       c,
+         const int_t *                ldc );
 
 // computes y = op(A)*x for upper/lower triangular A (y overwrites x)
 void
-ztrmv_ ( const char *                   uplo,
-         const char *                   trans,
-         const char *                   diag,
-         const blas_int_t *             n,
-         const std::complex<double> *   A,
-         const blas_int_t *             ldA,
-         std::complex<double> *         x,
-         const blas_int_t *             incx );
+ztrmv_ ( const char *                 uplo,
+         const char *                 trans,
+         const char *                 diag,
+         const int_t *                n,
+         const std::complex<double> * A,
+         const int_t *                ldA,
+         std::complex<double> *       x,
+         const int_t *                incx );
 
 // computes B = alpha * op(A) * B or B = alpha * B * op(A)
 CFUNCDECL
 void
-ztrmm_ ( const char *                   side,
-         const char *                   uplo,
-         const char *                   transa,
-         const char *                   diag,
-         const blas_int_t *             m,
-         const blas_int_t *             n,
-         const std::complex<double> *   alpha,
-         const std::complex<double> *   a,
-         const blas_int_t *             lda,
-         std::complex<double> *         b,
-         const blas_int_t *             ldb );
+ztrmm_ ( const char *                 side,
+         const char *                 uplo,
+         const char *                 transa,
+         const char *                 diag,
+         const int_t *                m,
+         const int_t *                n,
+         const std::complex<double> * alpha,
+         const std::complex<double> * a,
+         const int_t *                lda,
+         std::complex<double> *       b,
+         const int_t *                ldb );
 
 // solves A x = b or A^T x = b with triangular A
 CFUNCDECL
 void
-ztrsv_ ( const char *                   uplo,
-         const char *                   trans,
-         const char *                   diag,
-         const blas_int_t *             n,
-         const std::complex<double> *   a,
-         const blas_int_t *             lda,
-         std::complex<double> *         x,
-         const blas_int_t *             incx );
+ztrsv_ ( const char *                 uplo,
+         const char *                 trans,
+         const char *                 diag,
+         const int_t *                n,
+         const std::complex<double> * a,
+         const int_t *                lda,
+         std::complex<double> *       x,
+         const int_t *                incx );
 
 // solves A X = B or A^T X = B with triangular A
 CFUNCDECL
@@ -826,39 +826,39 @@ ztrsm_ ( const char *                   side,
          const char *                   uplo,
          const char *                   trans,
          const char *                   diag,
-         const blas_int_t *             n,
-         const blas_int_t *             m,
+         const int_t *                  n,
+         const int_t *                  m,
          const std::complex< double > * alpha,
          const std::complex< double > * A,
-         const blas_int_t *             lda,
-         std::complex< double > *            B,
-         const blas_int_t *             ldb );
+         const int_t *                  lda,
+         std::complex< double > *       B,
+         const int_t *                  ldb );
 
 // rank-1 update: A = alpha * x * y^T + A
 CFUNCDECL
 void
-zgeru_ ( const blas_int_t *             m,
-         const blas_int_t *             n,
-         const std::complex<double> *   alpha,
-         const std::complex<double> *   x,
-         const blas_int_t *             incx,
-         const std::complex<double> *   y,
-         const blas_int_t *             incy,
-         std::complex<double> *         A,
-         const blas_int_t *             lda );
+zgeru_ ( const int_t *                m,
+         const int_t *                n,
+         const std::complex<double> * alpha,
+         const std::complex<double> * x,
+         const int_t *                incx,
+         const std::complex<double> * y,
+         const int_t *                incy,
+         std::complex<double> *       A,
+         const int_t *                lda );
 
 // rank-1 update: A = alpha * x * conj(y^T) + A
 CFUNCDECL
 void
-zgerc_ ( const blas_int_t *             m,
-         const blas_int_t *             n,
-         const std::complex<double> *   alpha,
-         const std::complex<double> *   x,
-         const blas_int_t *             incx,
-         const std::complex<double> *   y,
-         const blas_int_t *             incy,
-         std::complex<double> *         A,
-         const blas_int_t *             lda );
+zgerc_ ( const int_t *                m,
+         const int_t *                n,
+         const std::complex<double> * alpha,
+         const std::complex<double> * x,
+         const int_t *                incx,
+         const std::complex<double> * y,
+         const int_t *                incy,
+         std::complex<double> *       A,
+         const int_t *                lda );
 }
 
 //////////////////////////////////////////////////////////////
@@ -880,265 +880,246 @@ extern "C" {
 // solve linear system of equations
 CFUNCDECL
 void
-sgesv_   ( const blas_int_t *   n,
-           const blas_int_t *   nrhs,
-           float *              A,
-           const blas_int_t *   lda,
-           blas_int_t *         ipiv,
-           float *              B,
-           const blas_int_t *   ldb,
-           blas_int_t *         info );
+sgesv_   ( const int_t *   n,
+           const int_t *   nrhs,
+           float *         A,
+           const int_t *   lda,
+           int_t *         ipiv,
+           float *         B,
+           const int_t *   ldb,
+           int_t *         info );
 
 // compute inverse of triangular system
 CFUNCDECL
 void
-strtri_  ( const char *         uplo,
-           const char *         diag,
-           const blas_int_t *   n,
-           float *              A,
-           const blas_int_t *   lda,
-           blas_int_t *         info );
+strtri_  ( const char *    uplo,
+           const char *    diag,
+           const int_t *   n,
+           float *         A,
+           const int_t *   lda,
+           int_t *         info );
 
 // compute eigenvalues and eigenvectors of a tridiagonal, symmetric matrix
 CFUNCDECL
 void
-sstev_   ( const char *         jobz,
-           const blas_int_t *   n,
-           float *              D,
-           float *              E,
-           float *              Z,
-           const blas_int_t *   ldz,
-           float *              work,
-           blas_int_t *         info );
+sstev_   ( const char *    jobz,
+           const int_t *   n,
+           float *         D,
+           float *         E,
+           float *         Z,
+           const int_t *   ldz,
+           float *         work,
+           int_t *         info );
 
 // compute eigenvalues and eigenvectors of a symmetric matrix
 CFUNCDECL
 void
-ssyev_   ( const char *         jobz,
-           const char *         uplo,
-           const blas_int_t *   n,
-           float *              A,
-           const blas_int_t *   lda,
-           float *              w,
-           float *              work,
-           const blas_int_t *   lwork,
-           blas_int_t *         info );
+ssyev_   ( const char *    jobz,
+           const char *    uplo,
+           const int_t *   n,
+           float *         A,
+           const int_t *   lda,
+           float *         w,
+           float *         work,
+           const int_t *   lwork,
+           int_t *         info );
     
 // compute selected eigenvalues and eigenvectors of a symmetric matrix
 CFUNCDECL
 void ssyevx_ ( const char * jobz, const char * range, const char * uplo,
-               const blas_int_t * n, float * A, const blas_int_t * ldA,
-               const float * vl, const float * vu, const blas_int_t * il, const blas_int_t * iu,
-               const float * abstol, blas_int_t * m, float * W, float * Z, const blas_int_t * ldZ,
-               float * work, const blas_int_t * lwork, blas_int_t * iwork, blas_int_t * ifail,
-               blas_int_t * info );
+               const int_t * n, float * A, const int_t * ldA,
+               const float * vl, const float * vu, const int_t * il, const int_t * iu,
+               const float * abstol, int_t * m, float * W, float * Z, const int_t * ldZ,
+               float * work, const int_t * lwork, int_t * iwork, int_t * ifail,
+               int_t * info );
     
 // compute singular-value-decomposition
 CFUNCDECL
 void
-sgesvd_  ( const char *         jobu,
-           const char *         jobv,
-           const blas_int_t *   n,
-           const blas_int_t *   m,
-           float *              A,
-           const blas_int_t *   lda,
-           float *              S,
-           float *              U,
-           const blas_int_t *   ldu,
-           float *              V,
-           const blas_int_t *   ldv,
-           float *              work,
-           const blas_int_t *   lwork,
-           blas_int_t *         info );
+sgesvd_  ( const char *    jobu,
+           const char *    jobv,
+           const int_t *   n,
+           const int_t *   m,
+           float *         A,
+           const int_t *   lda,
+           float *         S,
+           float *         U,
+           const int_t *   ldu,
+           float *         V,
+           const int_t *   ldv,
+           float *         work,
+           const int_t *   lwork,
+           int_t *         info );
 
 CFUNCDECL
 void
-sgesdd_  ( const char *         job,
-           const blas_int_t *   n,
-           const blas_int_t *   m,
-           float *              A,
-           const blas_int_t *   lda,
-           float *              S,
-           float *              U,
-           const blas_int_t *   ldu,
-           float *              VT,
-           const blas_int_t *   ldvt,
-           float *              work,
-           const blas_int_t *   lwork,
-           blas_int_t *         iwork,
-           blas_int_t *         info );
+sgesdd_  ( const char *    job,
+           const int_t *   n,
+           const int_t *   m,
+           float *         A,
+           const int_t *   lda,
+           float *         S,
+           float *         U,
+           const int_t *   ldu,
+           float *         VT,
+           const int_t *   ldvt,
+           float *         work,
+           const int_t *   lwork,
+           int_t *         iwork,
+           int_t *         info );
 
 CFUNCDECL
 void
-sgesvj_  ( const char *         joba,
-           const char *         jobu,
-           const char *         jobv,
-           const blas_int_t *   m,
-           const blas_int_t *   n,
-           float *              a,
-           const blas_int_t *   lda,
-           float *              sva,
-           const blas_int_t *   mv,
-           float *              v,
-           const blas_int_t *   ldv,
-           float *              work,
-           const blas_int_t *   lwork,
-           blas_int_t *         info );
+sgesvj_  ( const char *    joba,
+           const char *    jobu,
+           const char *    jobv,
+           const int_t *   m,
+           const int_t *   n,
+           float *         a,
+           const int_t *   lda,
+           float *         sva,
+           const int_t *   mv,
+           float *         v,
+           const int_t *   ldv,
+           float *         work,
+           const int_t *   lwork,
+           int_t *         info );
 
 CFUNCDECL
 void
-sgejsv_  ( const char *         joba,
-           const char *         jobu,
-           const char *         jobv,
-           const char *         jobr,
-           const char *         jobt,
-           const char *         jobp,
-           const blas_int_t *   m,
-           const blas_int_t *   n,
-           float *              a,
-           const blas_int_t *   lda,
-           float *              sva,
-           float *              u,
-           const blas_int_t *   ldu,
-           float *              v,
-           const blas_int_t *   ldv,
-           float *              work,
-           const blas_int_t *   lwork,
-           blas_int_t *         iwork,
-           blas_int_t *         info );
+sgejsv_  ( const char *    joba,
+           const char *    jobu,
+           const char *    jobv,
+           const char *    jobr,
+           const char *    jobt,
+           const char *    jobp,
+           const int_t *   m,
+           const int_t *   n,
+           float *         a,
+           const int_t *   lda,
+           float *         sva,
+           float *         u,
+           const int_t *   ldu,
+           float *         v,
+           const int_t *   ldv,
+           float *         work,
+           const int_t *   lwork,
+           int_t *         iwork,
+           int_t *         info );
 
 // compute QR-factorisation
 CFUNCDECL
 void
-sgeqrf_  ( const blas_int_t *   m,
-           const blas_int_t *   n,
-           float *              A,
-           const blas_int_t *   lda,
-           float *              tau,
-           float *              work,
-           const blas_int_t *   lwork,
-           blas_int_t *         info );
+sgeqrf_  ( const int_t *   m,
+           const int_t *   n,
+           float *         A,
+           const int_t *   lda,
+           float *         tau,
+           float *         work,
+           const int_t *   lwork,
+           int_t *         info );
 
 CFUNCDECL
 void
-sgeqr2_ ( const blas_int_t *  nrows,
-          const blas_int_t *  ncols,
-          float *             A,
-          const blas_int_t *  lda,
-          float *             tau,
-          float *             work,
-          const blas_int_t *  info );
+sgeqr2_ ( const int_t *  nrows,
+          const int_t *  ncols,
+          float *        A,
+          const int_t *  lda,
+          float *        tau,
+          float *        work,
+          const int_t *  info );
 
 CFUNCDECL
 void
-sorgqr_  ( const blas_int_t *   m,
-           const blas_int_t *   n,
-           const blas_int_t *   k,
-           float *              A,
-           const blas_int_t *   lda,
-           const float *        tau,
-           float *              work,
-           const blas_int_t *   lwork,
-           blas_int_t *         info );
+sorgqr_  ( const int_t *   m,
+           const int_t *   n,
+           const int_t *   k,
+           float *         A,
+           const int_t *   lda,
+           const float *   tau,
+           float *         work,
+           const int_t *   lwork,
+           int_t *         info );
 
 CFUNCDECL
 void
-sorg2r_ ( const blas_int_t *        nrows,
-          const blas_int_t *        ncols,
-          const blas_int_t *        nref,
-          float *                   A,
-          const blas_int_t *        lda,
-          const float *             tau,
-          float *                   work,
-          const blas_int_t *        info );
+sorg2r_ ( const int_t *        nrows,
+          const int_t *        ncols,
+          const int_t *        nref,
+          float *              A,
+          const int_t *        lda,
+          const float *        tau,
+          float *              work,
+          const int_t *        info );
 
 CFUNCDECL
 void
-sgeqp3_  ( const blas_int_t *   m,
-           const blas_int_t *   n,
-           float *              A,
-           const blas_int_t *   lda,
-           blas_int_t *         jpvt,
-           float *              tau,
-           float *              work,
-           const blas_int_t *   lwork,
-           blas_int_t *         info );
-
-#if HAS_GEQP3_TRUNC == 1
-
-CFUNCDECL
-void
-sgeqp3trunc_  ( const blas_int_t *   m,
-                const blas_int_t *   n,
-                float *              A,
-                const blas_int_t *   lda,
-                blas_int_t *         jpvt,
-                float *              tau,
-                blas_int_t *         ntrunc,
-                float *              atrunc,
-                float *              rtrunc,
-                float *              work,
-                const blas_int_t *   lwork,
-                blas_int_t *         info );
-
-#endif
+sgeqp3_  ( const int_t *   m,
+           const int_t *   n,
+           float *         A,
+           const int_t *   lda,
+           int_t *         jpvt,
+           float *         tau,
+           float *         work,
+           const int_t *   lwork,
+           int_t *         info );
 
 // compute LU factorisation of given matrix A
 CFUNCDECL
 void
-sgetrf_  ( const blas_int_t *   m,
-           const blas_int_t *   n,
-           float *              A,
-           const blas_int_t *   lda,
-           blas_int_t *         ipiv,
-           blas_int_t *         info );
+sgetrf_  ( const int_t *   m,
+           const int_t *   n,
+           float *         A,
+           const int_t *   lda,
+           int_t *         ipiv,
+           int_t *         info );
 
 // compute inverse of A (using result from getrf)
 CFUNCDECL
 void
-sgetri_  ( const blas_int_t *   n,
-           float *              A,
-           const blas_int_t *   lda,
-           blas_int_t *         ipiv,
-           float *              work,
-           const blas_int_t *   lwork,
-           blas_int_t *         info );
+sgetri_  ( const int_t *   n,
+           float *         A,
+           const int_t *   lda,
+           int_t *         ipiv,
+           float *         work,
+           const int_t *   lwork,
+           int_t *         info );
 
 // determine machine parameters
 CFUNCDECL
 float
-slamch_  ( char *               cmach );
+slamch_  ( char *          cmach );
 
 // generate plane-rotation
 CFUNCDECL
-blas_int_t
-slartg_  ( float *              f,
-           float *              g,
-           float *              cs,
-           float *              sn,
-           float *              r );
+int_t
+slartg_  ( float *         f,
+           float *         g,
+           float *         cs,
+           float *         sn,
+           float *         r );
 
 // compute householder reflection
 CFUNCDECL
 void
-slarfg_ ( const blas_int_t *      n,
-          const float *           alpha,
-          const float *           x,
-          const blas_int_t *      incx,
-          const float *           tau );
+slarfg_ ( const int_t *      n,
+          const float *      alpha,
+          const float *      x,
+          const int_t *      incx,
+          const float *      tau );
 
 // apply householder reflection
 CFUNCDECL
 void
-slarf_  ( const char *            side,
-          const blas_int_t *      n,
-          const blas_int_t *      m,
-          const float *           V,
-          const blas_int_t *      incv,
-          const float *           tau,
-          float *                 C,
-          const blas_int_t *      ldc,
-          const float *           work );
+slarf_  ( const char *       side,
+          const int_t *      n,
+          const int_t *      m,
+          const float *      V,
+          const int_t *      incv,
+          const float *      tau,
+          float *            C,
+          const int_t *      ldc,
+          const float *      work );
 
 //////////////////////////////////////////////////////////////
 //
@@ -1149,280 +1130,261 @@ slarf_  ( const char *            side,
 // solve linear system of equations
 CFUNCDECL
 void
-dgesv_   ( const blas_int_t *   n,
-           const blas_int_t *   nrhs,
-           double *             A,
-           const blas_int_t *   lda,
-           blas_int_t *         ipiv,
-           double *             B,
-           const blas_int_t *   ldb,
-           blas_int_t *         info );
+dgesv_   ( const int_t *   n,
+           const int_t *   nrhs,
+           double *        A,
+           const int_t *   lda,
+           int_t *         ipiv,
+           double *        B,
+           const int_t *   ldb,
+           int_t *         info );
 
 // compute inverse of triangular system
 CFUNCDECL
 void
-dtrtri_  ( const char *         uplo,
-           const char *         diag,
-           const blas_int_t *   n,
-           double *             A,
-           const blas_int_t *   lda,
-           blas_int_t *         info );
+dtrtri_  ( const char *    uplo,
+           const char *    diag,
+           const int_t *   n,
+           double *        A,
+           const int_t *   lda,
+           int_t *         info );
     
 // compute eigenvalues and eigenvectors of a tridiagonal, symmetric matrix
 CFUNCDECL
 void
-dstev_   ( const char *         jobz,
-           const blas_int_t *   n,
-           double *             D,
-           double *             E,
-           double *             Z,
-           const blas_int_t *   ldz,
-           double *             work,
-           blas_int_t *         info );
+dstev_   ( const char *    jobz,
+           const int_t *   n,
+           double *        D,
+           double *        E,
+           double *        Z,
+           const int_t *   ldz,
+           double *        work,
+           int_t *         info );
     
 // compute eigenvalues and eigenvectors of a symmetric matrix
 CFUNCDECL
 void
-dsyev_   ( const char *         jobz,
-           const char *         uplo,
-           const blas_int_t *   n,
-           double *             A,
-           const blas_int_t *   lda,
-           double *             w,
-           double *             work,
-           const blas_int_t *   lwork,
-           blas_int_t *         info );
+dsyev_   ( const char *    jobz,
+           const char *    uplo,
+           const int_t *   n,
+           double *        A,
+           const int_t *   lda,
+           double *        w,
+           double *        work,
+           const int_t *   lwork,
+           int_t *         info );
     
 // compute selected eigenvalues and eigenvectors of a symmetric matrix
 CFUNCDECL
 void
-dsyevx_  ( const char *         jobz,
-           const char *         range,
-           const char *         uplo,
-           const blas_int_t *   n,
-           double *             A,
-           const blas_int_t *   ldA,
-           const double *       vl,
-           const double *       vu,
-           const blas_int_t *   il,
-           const blas_int_t *   iu,
-           const double *       abstol,
-           blas_int_t *         m,
-           double *             W,
-           double *             Z,
-           const blas_int_t *   ldZ,
-           double *             work,
-           const blas_int_t *   lwork,
-           blas_int_t *         iwork,
-           blas_int_t *         ifail,
-           blas_int_t *         info );
+dsyevx_  ( const char *    jobz,
+           const char *    range,
+           const char *    uplo,
+           const int_t *   n,
+           double *        A,
+           const int_t *   ldA,
+           const double *  vl,
+           const double *  vu,
+           const int_t *   il,
+           const int_t *   iu,
+           const double *  abstol,
+           int_t *         m,
+           double *        W,
+           double *        Z,
+           const int_t *   ldZ,
+           double *        work,
+           const int_t *   lwork,
+           int_t *         iwork,
+           int_t *         ifail,
+           int_t *         info );
     
 // compute singular-value-decomposition
 CFUNCDECL
 void
-dgesvd_  ( const char *         jobu,
-           const char *         jobv,
-           const blas_int_t *   n,
-           const blas_int_t *   m,
-           double *             A,
-           const blas_int_t *   lda,
-           double *             S,
-           double *             U,
-           const blas_int_t *   ldu,
-           double *             V,
-           const blas_int_t *   ldv,
-           double *             work,
-           const blas_int_t *   lwork,
-           blas_int_t *         info );
+dgesvd_  ( const char *    jobu,
+           const char *    jobv,
+           const int_t *   n,
+           const int_t *   m,
+           double *        A,
+           const int_t *   lda,
+           double *        S,
+           double *        U,
+           const int_t *   ldu,
+           double *        V,
+           const int_t *   ldv,
+           double *        work,
+           const int_t *   lwork,
+           int_t *         info );
 
 CFUNCDECL
 void
-dgesdd_  ( const char *         jobz,
-           const blas_int_t *   n,
-           const blas_int_t *   m,
-           double *             A,
-           const blas_int_t *   lda,
-           double *             S,
-           double *             U,
-           const blas_int_t *   ldu,
-           double *             VT,
-           const blas_int_t *   ldvt,
-           double *             work,
-           const blas_int_t *   lwork,
-           blas_int_t *         iwork,
-           blas_int_t *         info );
+dgesdd_  ( const char *    jobz,
+           const int_t *   n,
+           const int_t *   m,
+           double *        A,
+           const int_t *   lda,
+           double *        S,
+           double *        U,
+           const int_t *   ldu,
+           double *        VT,
+           const int_t *   ldvt,
+           double *        work,
+           const int_t *   lwork,
+           int_t *         iwork,
+           int_t *         info );
 
 CFUNCDECL
 void
-dgejsv_  ( const char *         joba,
-           const char *         jobu,
-           const char *         jobv,
-           const char *         jobr,
-           const char *         jobt,
-           const char *         jobp,
-           const blas_int_t *   m,
-           const blas_int_t *   n,
-           double *             a,
-           const blas_int_t *   lda,
-           double *             sva,
-           double *             u,
-           const blas_int_t *   ldu,
-           double *             v,
-           const blas_int_t *   ldv,
-           double *             work,
-           const blas_int_t *   lwork,
-           blas_int_t *         iwork,
-           blas_int_t *         info );
+dgejsv_  ( const char *    joba,
+           const char *    jobu,
+           const char *    jobv,
+           const char *    jobr,
+           const char *    jobt,
+           const char *    jobp,
+           const int_t *   m,
+           const int_t *   n,
+           double *        a,
+           const int_t *   lda,
+           double *        sva,
+           double *        u,
+           const int_t *   ldu,
+           double *        v,
+           const int_t *   ldv,
+           double *        work,
+           const int_t *   lwork,
+           int_t *         iwork,
+           int_t *         info );
 
 CFUNCDECL
 void
-dgesvj_  ( const char *         joba,
-           const char *         jobu,
-           const char *         jobv,
-           const blas_int_t *   m,
-           const blas_int_t *   n,
-           double *             a,
-           const blas_int_t *   lda,
-           double *             sva,
-           const blas_int_t *   mv,
-           double *             v,
-           const blas_int_t *   ldv,
-           double *             work,
-           const blas_int_t *   lwork,
-           blas_int_t *         info );
+dgesvj_  ( const char *    joba,
+           const char *    jobu,
+           const char *    jobv,
+           const int_t *   m,
+           const int_t *   n,
+           double *        a,
+           const int_t *   lda,
+           double *        sva,
+           const int_t *   mv,
+           double *        v,
+           const int_t *   ldv,
+           double *        work,
+           const int_t *   lwork,
+           int_t *         info );
 
 // compute QR-factorisation
 CFUNCDECL
 void
-dgeqrf_  ( const blas_int_t *   m,
-           const blas_int_t *   n,
-           double *             A,
-           const blas_int_t *   lda,
-           double *             tau,
-           double *             work,
-           const blas_int_t *   lwork,
-           blas_int_t *         info );
+dgeqrf_  ( const int_t *   m,
+           const int_t *   n,
+           double *        A,
+           const int_t *   lda,
+           double *        tau,
+           double *        work,
+           const int_t *   lwork,
+           int_t *         info );
 
 CFUNCDECL
 void
-dgeqr2_ ( const blas_int_t *  nrows,
-          const blas_int_t *  ncols,
-          double *            A,
-          const blas_int_t *  lda,
-          double *            tau,
-          double *            work,
-          const blas_int_t *  info );
+dgeqr2_ ( const int_t *  nrows,
+          const int_t *  ncols,
+          double *       A,
+          const int_t *  lda,
+          double *       tau,
+          double *       work,
+          const int_t *  info );
 
 CFUNCDECL
 void
-dorgqr_  ( const blas_int_t *   m,
-           const blas_int_t *   n,
-           const blas_int_t *   k,
-           double *             A,
-           const blas_int_t *   lda,
-           const double *       tau,
-           double *             work,
-           const blas_int_t *   lwork,
-           blas_int_t *         info );
+dorgqr_  ( const int_t *   m,
+           const int_t *   n,
+           const int_t *   k,
+           double *        A,
+           const int_t *   lda,
+           const double *  tau,
+           double *        work,
+           const int_t *   lwork,
+           int_t *         info );
 
 CFUNCDECL
 void
-dorg2r_ ( const blas_int_t *        nrows,
-          const blas_int_t *        ncols,
-          const blas_int_t *        nref,
-          double *                  A,
-          const blas_int_t *        lda,
-          const double *            tau,
-          double *                  work,
-          const blas_int_t *        info );
+dorg2r_ ( const int_t *        nrows,
+          const int_t *        ncols,
+          const int_t *        nref,
+          double *             A,
+          const int_t *        lda,
+          const double *       tau,
+          double *             work,
+          const int_t *        info );
 
 CFUNCDECL
 void
-dgeqp3_  ( const blas_int_t *   m,
-           const blas_int_t *   n,
-           double *             A,
-           const blas_int_t *   lda,
-           blas_int_t *         jpvt,
-           double *             tau,
-           double *             work,
-           const blas_int_t *   lwork,
-           blas_int_t *         info );
-
-#if HAS_GEQP3_TRUNC == 1
-
-CFUNCDECL
-void
-dgeqp3trunc_  ( const blas_int_t *   m,
-                const blas_int_t *   n,
-                double *             A,
-                const blas_int_t *   lda,
-                blas_int_t *         jpvt,
-                double *             tau,
-                blas_int_t *         ntrunc,
-                double *             atrunc,
-                double *             rtrunc,
-                double *             work,
-                const blas_int_t *   lwork,
-                blas_int_t *         info );
-
-#endif
+dgeqp3_  ( const int_t *   m,
+           const int_t *   n,
+           double *        A,
+           const int_t *   lda,
+           int_t *         jpvt,
+           double *        tau,
+           double *        work,
+           const int_t *   lwork,
+           int_t *         info );
 
 // compute LU factorisation of given matrix A
 CFUNCDECL
 void
-dgetrf_  ( const blas_int_t *   m,
-           const blas_int_t *   n,
-           double *             A,
-           const blas_int_t *   lda,
-           blas_int_t *         ipiv,
-           blas_int_t *         info );
+dgetrf_  ( const int_t *   m,
+           const int_t *   n,
+           double *        A,
+           const int_t *   lda,
+           int_t *         ipiv,
+           int_t *         info );
     
 // compute inverse of A (using result from getrf)
 CFUNCDECL
 void
-dgetri_  ( const blas_int_t *   n,
-           double *             A,
-           const blas_int_t *   lda,
-           blas_int_t *         ipiv,
-           double *             work,
-           const blas_int_t *   lwork,
-           blas_int_t *         info );
+dgetri_  ( const int_t *   n,
+           double *        A,
+           const int_t *   lda,
+           int_t *         ipiv,
+           double *        work,
+           const int_t *   lwork,
+           int_t *         info );
     
 // determine machine parameters
 CFUNCDECL
 double
-dlamch_  ( char *               cmach );
+dlamch_  ( char *            cmach );
 
 // generate plane-rotation
 CFUNCDECL
-blas_int_t
-dlartg_  ( double *             f,
-           double *             g,
-           double *             cs,
-           double *             sn,
-           double *             r );
+int_t
+dlartg_  ( double *          f,
+           double *          g,
+           double *          cs,
+           double *          sn,
+           double *          r );
 
 // compute householder reflection
 CFUNCDECL
 void
-dlarfg_ ( const blas_int_t *      n,
-          const double *          alpha,
-          const double *          x,
-          const blas_int_t *      incx,
-          const double *          tau );
+dlarfg_ ( const int_t *      n,
+          const double *     alpha,
+          const double *     x,
+          const int_t *      incx,
+          const double *     tau );
 
 // apply householder reflection
 CFUNCDECL
 void
-dlarf_  ( const char *            side,
-          const blas_int_t *      n,
-          const blas_int_t *      m,
-          const double *          V,
-          const blas_int_t *      incv,
-          const double *          tau,
-          double *                C,
-          const blas_int_t *      ldc,
-          const double *          work );
+dlarf_  ( const char *       side,
+          const int_t *      n,
+          const int_t *      m,
+          const double *     V,
+          const int_t *      incv,
+          const double *     tau,
+          double *           C,
+          const int_t *      ldc,
+          const double *     work );
 
 //////////////////////////////////////////////////////////////
 //
@@ -1433,214 +1395,214 @@ dlarf_  ( const char *            side,
 // solve linear system of equations
 CFUNCDECL
 void
-cgesv_   ( const blas_int_t *           n,
-           const blas_int_t *           nrhs,
-           std::complex<float> *        a,
-           const blas_int_t *           lda,
-           blas_int_t *                 ipiv,
-           std::complex<float> *        b,
-           const blas_int_t *           ldb,
-           blas_int_t *                 info );
+cgesv_   ( const int_t *           n,
+           const int_t *           nrhs,
+           std::complex<float> *   a,
+           const int_t *           lda,
+           int_t *                 ipiv,
+           std::complex<float> *   b,
+           const int_t *           ldb,
+           int_t *                 info );
 
 // compute inverse of triangular system
 CFUNCDECL
 void
-ctrtri_  ( const char *                 uplo,
-           const char *                 diag,
-           const blas_int_t *           n,
-           std::complex< float > *      A,
-           const blas_int_t *           lda,
-           blas_int_t *                 info );
+ctrtri_  ( const char *             uplo,
+           const char *             diag,
+           const int_t *            n,
+           std::complex< float > *  A,
+           const int_t *            lda,
+           int_t *                  info );
     
 // compute eigenvalues and eigenvectors of a symmetric matrix
 CFUNCDECL
 void
-cheev_   ( const char *                 jobz,
-           const char *                 uplo,
-           const blas_int_t *           n,
-           std::complex<float> *        A,
-           const blas_int_t *           lda,
-           float *                      w,
-           std::complex<float> *        work,
-           const blas_int_t *           lwork,
-           float *                      rwork,
-           blas_int_t *                 info );
+cheev_   ( const char *            jobz,
+           const char *            uplo,
+           const int_t *           n,
+           std::complex<float> *   A,
+           const int_t *           lda,
+           float *                 w,
+           std::complex<float> *   work,
+           const int_t *           lwork,
+           float *                 rwork,
+           int_t *                 info );
     
 // compute singular-value-decomposition
 CFUNCDECL
 void
-cgesvd_  ( const char *                 jobu,
-           const char *                 jobv,
-           const blas_int_t *           n,
-           const blas_int_t *           m,
-           std::complex<float> *        A,
-           const blas_int_t *           lda,
-           float *                      S,
-           std::complex<float> *        U,
-           const blas_int_t *           ldu,
-           std::complex<float> *        V,
-           const blas_int_t *           ldv,
-           std::complex<float> *        work,
-           const blas_int_t *           lwork,
-           float *                      rwork,
-           blas_int_t *                 info );
+cgesvd_  ( const char *            jobu,
+           const char *            jobv,
+           const int_t *           n,
+           const int_t *           m,
+           std::complex<float> *   A,
+           const int_t *           lda,
+           float *                 S,
+           std::complex<float> *   U,
+           const int_t *           ldu,
+           std::complex<float> *   V,
+           const int_t *           ldv,
+           std::complex<float> *   work,
+           const int_t *           lwork,
+           float *                 rwork,
+           int_t *                 info );
 
 CFUNCDECL
 void
-cgesdd_  ( const char *                 job,
-           const blas_int_t *           n,
-           const blas_int_t *           m,
-           std::complex<float> *        A,
-           const blas_int_t *           lda,
-           float *                      S,
-           std::complex<float> *        U,
-           const blas_int_t *           ldu,
-           std::complex<float> *        VT,
-           const blas_int_t *           ldvt,
-           std::complex<float> *        work,
-           const blas_int_t *           lwork,
-           float *                      rwork,
-           const blas_int_t *           iwork,
-           blas_int_t *                 info );
+cgesdd_  ( const char *            job,
+           const int_t *           n,
+           const int_t *           m,
+           std::complex<float> *   A,
+           const int_t *           lda,
+           float *                 S,
+           std::complex<float> *   U,
+           const int_t *           ldu,
+           std::complex<float> *   VT,
+           const int_t *           ldvt,
+           std::complex<float> *   work,
+           const int_t *           lwork,
+           float *                 rwork,
+           const int_t *           iwork,
+           int_t *                 info );
 
 CFUNCDECL
 void
-cgesvj_  ( const char *                 joba,
-           const char *                 jobu,
-           const char *                 jobv,
-           const blas_int_t *           n,
-           const blas_int_t *           m,
-           std::complex<float> *        A,
-           const blas_int_t *           lda,
-           float *                      S,
-           const blas_int_t *           mv,
-           std::complex<float> *        V,
-           const blas_int_t *           ldv,
-           std::complex<float> *        cwork,
-           const blas_int_t *           lwork,
-           float *                      rwork,
-           const blas_int_t *           lrwork,
-           blas_int_t *                 info );
+cgesvj_  ( const char *            joba,
+           const char *            jobu,
+           const char *            jobv,
+           const int_t *           n,
+           const int_t *           m,
+           std::complex<float> *   A,
+           const int_t *           lda,
+           float *                 S,
+           const int_t *           mv,
+           std::complex<float> *   V,
+           const int_t *           ldv,
+           std::complex<float> *   cwork,
+           const int_t *           lwork,
+           float *                 rwork,
+           const int_t *           lrwork,
+           int_t *                 info );
 
 // compute QR-factorisation
 CFUNCDECL
 void
-cgeqrf_  ( const blas_int_t *           m,
-           const blas_int_t *           n,
-           std::complex<float> *        A,
-           const blas_int_t *           lda,
-           std::complex<float> *        tau,
-           std::complex<float> *        work,
-           const blas_int_t *           lwork,
-           blas_int_t *                 info );
+cgeqrf_  ( const int_t *           m,
+           const int_t *           n,
+           std::complex<float> *   A,
+           const int_t *           lda,
+           std::complex<float> *   tau,
+           std::complex<float> *   work,
+           const int_t *           lwork,
+           int_t *                 info );
 
 CFUNCDECL
 void
-cgeqr2_ ( const blas_int_t *        nrows,
-          const blas_int_t *        ncols,
+cgeqr2_ ( const int_t *             nrows,
+          const int_t *             ncols,
           std::complex< float > *   A,
-          const blas_int_t *        lda,
+          const int_t *             lda,
           std::complex< float > *   tau,
           std::complex< float > *   work,
-          const blas_int_t *        info );
+          const int_t *             info );
 
 CFUNCDECL
 void
-cungqr_  ( const blas_int_t *           m,
-           const blas_int_t *           n,
-           const blas_int_t *           k,
+cungqr_  ( const int_t *                m,
+           const int_t *                n,
+           const int_t *                k,
            std::complex<float> *        a,
-           const blas_int_t *           lda,
+           const int_t *                lda,
            const std::complex<float> *  tau,
            std::complex<float> *        work,
-           const blas_int_t *           lwork,
-           blas_int_t *                 info );
+           const int_t *                lwork,
+           int_t *                      info );
 
 CFUNCDECL
 void
-cung2r_ ( const blas_int_t *            nrows,
-          const blas_int_t *            ncols,
-          const blas_int_t *            nref,
+cung2r_ ( const int_t *                 nrows,
+          const int_t *                 ncols,
+          const int_t *                 nref,
           std::complex< float > *       A,
-          const blas_int_t *            lda,
+          const int_t *                 lda,
           const std::complex< float > * tau,
           std::complex< float > *       work,
-          const blas_int_t *            info );
+          const int_t *                 info );
 
 CFUNCDECL
 void
-cgeqp3_  ( const blas_int_t *     m,
-           const blas_int_t *     n,
+cgeqp3_  ( const int_t *          m,
+           const int_t *          n,
            std::complex<float> *  A,
-           const blas_int_t *     lda,
-           blas_int_t *           jpvt,
+           const int_t *          lda,
+           int_t *                jpvt,
            std::complex<float> *  tau,
            std::complex<float> *  work,
-           const blas_int_t *     lwork,
+           const int_t *          lwork,
            float *                rwork,
-           blas_int_t *           info );
+           int_t *                info );
 
 #if HAS_GEQP3_TRUNC == 1
 
 CFUNCDECL
 void
-cgeqp3trunc_  ( const blas_int_t *     m,
-                const blas_int_t *     n,
+cgeqp3trunc_  ( const int_t *          m,
+                const int_t *          n,
                 std::complex<float> *  A,
-                const blas_int_t *     lda,
-                blas_int_t *           jpvt,
+                const int_t *          lda,
+                int_t *                jpvt,
                 std::complex<float> *  tau,
-                blas_int_t *           ntrunc,
+                int_t *                ntrunc,
                 float *                atrunc,
                 float *                rtrunc,
                 std::complex<float> *  work,
-                const blas_int_t *     lwork,
+                const int_t *          lwork,
                 float *                rwork,
-                blas_int_t *           info );
+                int_t *                info );
 
 #endif
 
 // compute LU factorisation of given matrix A
 CFUNCDECL
 void
-cgetrf_  ( const blas_int_t *           m,
-           const blas_int_t *           n,
-           std::complex<float> *        a,
-           const blas_int_t *           lda,
-           blas_int_t *                 ipiv,
-           blas_int_t *                 info);
+cgetrf_  ( const int_t *           m,
+           const int_t *           n,
+           std::complex<float> *   a,
+           const int_t *           lda,
+           int_t *                 ipiv,
+           int_t *                 info);
 
 // compute inverse of A (using result from getrf)
 CFUNCDECL
 void
-cgetri_  ( const blas_int_t *           n,
-           std::complex<float> *        a,
-           const blas_int_t *           lda,
-           blas_int_t *                 ipiv,
-           std::complex<float> *        work,
-           const blas_int_t *           lwork,
-           blas_int_t *                 info);
+cgetri_  ( const int_t *           n,
+           std::complex<float> *   a,
+           const int_t *           lda,
+           int_t *                 ipiv,
+           std::complex<float> *   work,
+           const int_t *           lwork,
+           int_t *                 info);
 
 // compute householder reflection
 CFUNCDECL
 void
-clarfg_ ( const blas_int_t *            n,
+clarfg_ ( const int_t *                 n,
           const std::complex< float > * alpha,
           const std::complex< float > * x,
-          const blas_int_t *            incx,
+          const int_t *                 incx,
           const std::complex< float > * tau );
 
 // apply householder reflection
 CFUNCDECL
 void
 clarf_  ( const char *                  side,
-          const blas_int_t *            n,
-          const blas_int_t *            m,
+          const int_t *                 n,
+          const int_t *                 m,
           const std::complex< float > * V,
-          const blas_int_t *            incv,
+          const int_t *                 incv,
           const std::complex< float > * tau,
           std::complex< float > *       C,
-          const blas_int_t *            ldc,
+          const int_t *                 ldc,
           const std::complex< float > * work );
 
 //////////////////////////////////////////////////////////////
@@ -1652,214 +1614,214 @@ clarf_  ( const char *                  side,
 // solve linear system of equations
 CFUNCDECL
 void
-zgesv_   ( const blas_int_t *           n,
-           const blas_int_t *           nrhs,
-           std::complex<double> *       a,
-           const blas_int_t *           lda,
-           blas_int_t *                 ipiv,
-           std::complex<double> *       b,
-           const blas_int_t *           ldb,
-           blas_int_t *                 info );
+zgesv_   ( const int_t *           n,
+           const int_t *           nrhs,
+           std::complex<double> *  a,
+           const int_t *           lda,
+           int_t *                 ipiv,
+           std::complex<double> *  b,
+           const int_t *           ldb,
+           int_t *                 info );
 
 // compute inverse of triangular system
 CFUNCDECL
 void
 ztrtri_  ( const char *                 uplo,
            const char *                 diag,
-           const blas_int_t *           n,
+           const int_t *                n,
            std::complex< double > *     A,
-           const blas_int_t *           lda,
-           blas_int_t *                 info );
+           const int_t *                lda,
+           int_t *                      info );
     
 // compute eigenvalues and eigenvectors of a symmetric matrix
 CFUNCDECL
 void
-zheev_   ( const char *                 jobz,
-           const char *                 uplo,
-           const blas_int_t *           n,
-           std::complex<double> *       A,
-           const blas_int_t *           lda,
-           double *                     w,
-           std::complex<double> *       work,
-           const blas_int_t *           lwork,
-           double *                     rwork,
-           blas_int_t *                 info );
+zheev_   ( const char *            jobz,
+           const char *            uplo,
+           const int_t *           n,
+           std::complex<double> *  A,
+           const int_t *           lda,
+           double *                w,
+           std::complex<double> *  work,
+           const int_t *           lwork,
+           double *                rwork,
+           int_t *                 info );
     
 // compute singular-value-decomposition
 CFUNCDECL
 void
-zgesvd_  ( const char *                 jobu,
-           const char *                 jobv,
-           const blas_int_t *           n,
-           const blas_int_t *           m,
-           std::complex<double> *       A,
-           const blas_int_t *           lda,
-           double *                     S,
-           std::complex<double> *       U,
-           const blas_int_t *           ldu,
-           std::complex<double> *       V,
-           const blas_int_t *           ldv,
-           std::complex<double> *       work,
-           const blas_int_t *           lwork,
-           double *                     rwork,
-           blas_int_t *                 info );
+zgesvd_  ( const char *            jobu,
+           const char *            jobv,
+           const int_t *           n,
+           const int_t *           m,
+           std::complex<double> *  A,
+           const int_t *           lda,
+           double *                S,
+           std::complex<double> *  U,
+           const int_t *           ldu,
+           std::complex<double> *  V,
+           const int_t *           ldv,
+           std::complex<double> *  work,
+           const int_t *           lwork,
+           double *                rwork,
+           int_t *                 info );
 
 CFUNCDECL
 void
-zgesdd_  ( const char *                 job,
-           const blas_int_t *           n,
-           const blas_int_t *           m,
-           std::complex<double> *       A,
-           const blas_int_t *           lda,
-           double *                     S,
-           std::complex<double> *       U,
-           const blas_int_t *           ldu,
-           std::complex<double> *       VT,
-           const blas_int_t *           ldvt,
-           std::complex<double> *       work,
-           const blas_int_t *           lwork,
-           double *                     rwork,
-           const blas_int_t *           iwork,
-           blas_int_t *                 info );
+zgesdd_  ( const char *            job,
+           const int_t *           n,
+           const int_t *           m,
+           std::complex<double> *  A,
+           const int_t *           lda,
+           double *                S,
+           std::complex<double> *  U,
+           const int_t *           ldu,
+           std::complex<double> *  VT,
+           const int_t *           ldvt,
+           std::complex<double> *  work,
+           const int_t *           lwork,
+           double *                rwork,
+           const int_t *           iwork,
+           int_t *                 info );
 
 CFUNCDECL
 void
-zgesvj_  ( const char *                 joba,
-           const char *                 jobu,
-           const char *                 jobv,
-           const blas_int_t *           n,
-           const blas_int_t *           m,
-           std::complex<double> *       A,
-           const blas_int_t *           lda,
-           double *                     S,
-           const blas_int_t *           mv,
-           std::complex<double> *       V,
-           const blas_int_t *           ldv,
-           std::complex<double> *       cwork,
-           const blas_int_t *           lwork,
-           double *                     rwork,
-           const blas_int_t *           lrwork,
-           blas_int_t *                 info );
+zgesvj_  ( const char *            joba,
+           const char *            jobu,
+           const char *            jobv,
+           const int_t *           n,
+           const int_t *           m,
+           std::complex<double> *  A,
+           const int_t *           lda,
+           double *                S,
+           const int_t *           mv,
+           std::complex<double> *  V,
+           const int_t *           ldv,
+           std::complex<double> *  cwork,
+           const int_t *           lwork,
+           double *                rwork,
+           const int_t *           lrwork,
+           int_t *                 info );
 
 // compute QR-factorisation
 CFUNCDECL
 void
-zgeqrf_  ( const blas_int_t *           m,
-           const blas_int_t *           n,
-           std::complex<double> *       A,
-           const blas_int_t *           lda,
-           std::complex<double> *       tau,
-           std::complex<double> *       work,
-           const blas_int_t *           lwork,
-           blas_int_t *                 info );
+zgeqrf_  ( const int_t *           m,
+           const int_t *           n,
+           std::complex<double> *  A,
+           const int_t *           lda,
+           std::complex<double> *  tau,
+           std::complex<double> *  work,
+           const int_t *           lwork,
+           int_t *                 info );
 
 CFUNCDECL
 void
-zgeqr2_ ( const blas_int_t *        nrows,
-          const blas_int_t *        ncols,
+zgeqr2_ ( const int_t *             nrows,
+          const int_t *             ncols,
           std::complex< double > *  A,
-          const blas_int_t *        lda,
+          const int_t *             lda,
           std::complex< double > *  tau,
           std::complex< double > *  work,
-          const blas_int_t *        info );
+          const int_t *             info );
 
 CFUNCDECL
 void
-zungqr_  ( const blas_int_t *           m,
-           const blas_int_t *           n,
-           const blas_int_t *           k,
+zungqr_  ( const int_t *                m,
+           const int_t *                n,
+           const int_t *                k,
            std::complex<double> *       a,
-           const blas_int_t *           lda,
+           const int_t *                lda,
            const std::complex<double> * tau,
            std::complex<double> *       work,
-           const blas_int_t *           lwork,
-           blas_int_t *                 info );
+           const int_t *                lwork,
+           int_t *                      info );
 
 CFUNCDECL
 void
-zung2r_ ( const blas_int_t *              nrows,
-          const blas_int_t *              ncols,
-          const blas_int_t *              nref,
+zung2r_ ( const int_t *                   nrows,
+          const int_t *                   ncols,
+          const int_t *                   nref,
           std::complex< double > *        A,
-          const blas_int_t *              lda,
+          const int_t *                   lda,
           const std::complex< double > *  tau,
           std::complex< double > *        work,
-          const blas_int_t *              info );
+          const int_t *                   info );
 
 CFUNCDECL
 void
-zgeqp3_  ( const blas_int_t *           m,
-           const blas_int_t *           n,
-           std::complex<double> *       A,
-           const blas_int_t *           lda,
-           blas_int_t *                 jpvt,
-           std::complex<double> *       tau,
-           std::complex<double> *       work,
-           const blas_int_t *           lwork,
-           double *                     rwork,
-           blas_int_t *                 info );
+zgeqp3_  ( const int_t *           m,
+           const int_t *           n,
+           std::complex<double> *  A,
+           const int_t *           lda,
+           int_t *                 jpvt,
+           std::complex<double> *  tau,
+           std::complex<double> *  work,
+           const int_t *           lwork,
+           double *                rwork,
+           int_t *                 info );
 
 #if HAS_GEQP3_TRUNC == 1
 
 CFUNCDECL
 void
-zgeqp3trunc_  ( const blas_int_t *      m,
-                const blas_int_t *      n,
+zgeqp3trunc_  ( const int_t *           m,
+                const int_t *           n,
                 std::complex<double> *  A,
-                const blas_int_t *      lda,
-                blas_int_t *            jpvt,
+                const int_t *           lda,
+                int_t *                 jpvt,
                 std::complex<double> *  tau,
-                blas_int_t *            ntrunc,
+                int_t *                 ntrunc,
                 double *                atrunc,
                 double *                rtrunc,
                 std::complex<double> *  work,
-                const blas_int_t *      lwork,
+                const int_t *           lwork,
                 double *                rwork,
-                blas_int_t *            info );
+                int_t *                 info );
 
 #endif
 
 // compute LU factorisation of given matrix A
 CFUNCDECL
 void
-zgetrf_  ( const blas_int_t *           m,
-           const blas_int_t *           n,
-           std::complex<double> *       a,
-           const blas_int_t *           lda,
-           blas_int_t *                 ipiv,
-           blas_int_t *                 info);
+zgetrf_  ( const int_t *           m,
+           const int_t *           n,
+           std::complex<double> *  a,
+           const int_t *           lda,
+           int_t *                 ipiv,
+           int_t *                 info);
 
 // compute inverse of A (using result from getrf)
 CFUNCDECL
 void
-zgetri_  ( const blas_int_t *           n,
+zgetri_  ( const int_t *                n,
            std::complex<double> *       a,
-           const blas_int_t *           lda,
-           blas_int_t *                 ipiv,
+           const int_t *                lda,
+           int_t *                      ipiv,
            std::complex<double> *       work,
-           const blas_int_t *           lwork,
-           blas_int_t *                 info);
+           const int_t *                lwork,
+           int_t *                      info);
 
 // compute householder reflection
 CFUNCDECL
 void
-zlarfg_ ( const blas_int_t *              n,
+zlarfg_ ( const int_t *                   n,
           const std::complex< double > *  alpha,
           const std::complex< double > *  x,
-          const blas_int_t *              incx,
+          const int_t *                   incx,
           const std::complex< double > *  tau );
 
 // apply householder reflection
 CFUNCDECL
 void
 zlarf_  ( const char *                    side,
-          const blas_int_t *              n,
-          const blas_int_t *              m,
+          const int_t *                   n,
+          const int_t *                   m,
           const std::complex< double > *  V,
-          const blas_int_t *              incv,
+          const int_t *                   incv,
           const std::complex< double > *  tau,
           std::complex< double > *        C,
-          const blas_int_t *              ldc,
+          const int_t *                   ldc,
           const std::complex< double > *  work );
 
 //////////////////////////////////////////////////////////////
@@ -1869,14 +1831,14 @@ zlarf_  ( const char *                    side,
 //////////////////////////////////////////////////////////////
 
 // return problem dependent parameters
-blas_int_t
-ilaenv_ ( const blas_int_t *    ispec,
-          const char *          name,
-          const char *          opts,
-          const blas_int_t *    n1,
-          const blas_int_t *    n2,
-          const blas_int_t *    n3,
-          const blas_int_t *    n4 );
+int_t
+ilaenv_ ( const int_t *    ispec,
+          const char *     name,
+          const char *     opts,
+          const int_t *    n1,
+          const int_t *    n2,
+          const int_t *    n3,
+          const int_t *    n4 );
 
 }// extern "C"
 
@@ -1891,14 +1853,14 @@ ilaenv_ ( const blas_int_t *    ispec,
 //
 // *laset
 //
-#define HLRCOMPRESS_LASET_FUNC( type, func )                    \
-    inline void laset ( const char       uplo,                  \
-                        const blas_int_t m,                     \
-                        const blas_int_t n,                     \
-                        const type       alpha,                 \
-                        const type       beta,                  \
-                        type *           A,                     \
-                        const blas_int_t lda ) {                \
+#define HLRCOMPRESS_LASET_FUNC( type, func )                \
+    inline void laset ( const char   uplo,                  \
+                        const int_t  m,                     \
+                        const int_t  n,                     \
+                        const type   alpha,                 \
+                        const type   beta,                  \
+                        type *       A,                     \
+                        const int_t  lda ) {                \
         func( & uplo, & m, & n, & alpha, & beta, A, & lda ); }
 
 HLRCOMPRESS_LASET_FUNC( float,                  slaset_ )
@@ -1912,13 +1874,13 @@ HLRCOMPRESS_LASET_FUNC( std::complex< double >, zlaset_ )
 // *lacpy
 //
 #define HLRCOMPRESS_LACPY_FUNC( type, func )            \
-    inline void lacpy ( const char       uplo,          \
-                        const blas_int_t m,             \
-                        const blas_int_t n,             \
-                        const type *     A,             \
-                        const blas_int_t lda,           \
-                        type *           B,             \
-                        const blas_int_t ldb ) {        \
+    inline void lacpy ( const char    uplo,             \
+                        const int_t   m,                \
+                        const int_t   n,                \
+                        const type *  A,                \
+                        const int_t   lda,              \
+                        type *        B,                \
+                        const int_t   ldb ) {           \
         func( & uplo, & m, & n, A, & lda, B, & ldb ); }
 
 HLRCOMPRESS_LACPY_FUNC( float,             slacpy_ )
@@ -1932,10 +1894,10 @@ HLRCOMPRESS_LACPY_FUNC( std::complex< double >, zlacpy_ )
 // *scal
 //
 #define HLRCOMPRESS_SCAL_FUNC( type, func )     \
-    inline void scal ( const blas_int_t n,      \
-                       const type       alpha,  \
-                       type *           x,      \
-                       const blas_int_t incx )  \
+    inline void scal ( const int_t n,           \
+                       const type  alpha,       \
+                       type *      x,           \
+                       const int_t incx )       \
     { func( & n, & alpha, x, & incx ); }
 
 HLRCOMPRESS_SCAL_FUNC( float,                  sscal_ )
@@ -1946,10 +1908,10 @@ HLRCOMPRESS_SCAL_FUNC( std::complex< double >, zscal_ )
 //
 // *copy
 //
-#define HLRCOMPRESS_COPY_FUNC( type, func )                 \
-    inline void copy ( const blas_int_t n, const type * x,  \
-                       const blas_int_t incx,               \
-                       type * y, const blas_int_t incy )    \
+#define HLRCOMPRESS_COPY_FUNC( type, func )            \
+    inline void copy ( const int_t n, const type * x,  \
+                       const int_t incx,               \
+                       type * y, const int_t incy )    \
     { func( & n, x, & incx, y, & incy ); }
                                                        
 HLRCOMPRESS_COPY_FUNC( float,                  scopy_ )
@@ -1960,10 +1922,10 @@ HLRCOMPRESS_COPY_FUNC( std::complex< double >, zcopy_ )
 //
 // *swap
 //
-#define HLRCOMPRESS_SWAP_FUNC( type, func )                 \
-    inline  void swap ( const blas_int_t n, type * x,       \
-                        const blas_int_t incx,              \
-                        type * y, const blas_int_t incy )   \
+#define HLRCOMPRESS_SWAP_FUNC( type, func )            \
+    inline  void swap ( const int_t n, type * x,       \
+                        const int_t incx,              \
+                        type * y, const int_t incy )   \
     { func( & n, x, & incx, y, & incy ); }
                                                        
 HLRCOMPRESS_SWAP_FUNC( float,                  sswap_ )
@@ -1974,9 +1936,9 @@ HLRCOMPRESS_SWAP_FUNC( std::complex< double >, zswap_ )
 //
 // i*amax
 //
-#define HLRCOMPRESS_MAX_IDX_FUNC( type, func )                      \
-    inline blas_int_t max_idx ( const blas_int_t n,                 \
-                                type * x, const blas_int_t incx )   \
+#define HLRCOMPRESS_MAX_IDX_FUNC( type, func )            \
+    inline int_t max_idx ( const int_t n,                 \
+                                type * x, const int_t incx )   \
     { return func( & n, x, & incx ); }
                                                        
 HLRCOMPRESS_MAX_IDX_FUNC( float,                  isamax_ )
@@ -1988,10 +1950,10 @@ HLRCOMPRESS_MAX_IDX_FUNC( std::complex< double >, izamax_ )
 // *axpy
 //
 #define HLRCOMPRESS_AXPY_FUNC( type, func, flops )          \
-    inline void axpy ( const blas_int_t n,                  \
+    inline void axpy ( const int_t n,                       \
                        const type alpha, const type * x,    \
-                       const blas_int_t incx,               \
-                       type * y, const blas_int_t incy )    \
+                       const int_t incx,                    \
+                       type * y, const int_t incy )         \
     {                                                       \
         func( & n, & alpha, x, & incx, y, & incy );         \
     }
@@ -2006,27 +1968,27 @@ HLRCOMPRESS_AXPY_FUNC( std::complex< double >, zaxpy_, ZAXPY )
 //
 inline
 float
-dot ( const blas_int_t  n,
-      const float *  x, const blas_int_t  incx,
-      const float *  y, const blas_int_t  incy )
+dot ( const int_t  n,
+      const float *  x, const int_t  incx,
+      const float *  y, const int_t  incy )
 {
     return sdot_( & n, x, & incx, y, & incy );
 }
 
 inline
 double
-dot ( const blas_int_t  n,
-      const double *  x, const blas_int_t  incx,
-      const double *  y, const blas_int_t  incy )
+dot ( const int_t  n,
+      const double *  x, const int_t  incx,
+      const double *  y, const int_t  incy )
 {
     return ddot_( & n, x, & incx, y, & incy );
 }
 
 inline
 std::complex< float >
-dot ( const blas_int_t  n,
-      const std::complex< float > *  x, const blas_int_t  incx,
-      const std::complex< float > *  y, const blas_int_t  incy )
+dot ( const int_t  n,
+      const std::complex< float > *  x, const int_t  incx,
+      const std::complex< float > *  y, const int_t  incy )
 {
     std::complex< float >  res;
     
@@ -2045,9 +2007,9 @@ dot ( const blas_int_t  n,
 
 inline
 std::complex< double >
-dot ( const blas_int_t  n,
-      const std::complex< double > *  x, const blas_int_t  incx,
-      const std::complex< double > *  y, const blas_int_t  incy )
+dot ( const int_t  n,
+      const std::complex< double > *  x, const int_t  incx,
+      const std::complex< double > *  y, const int_t  incy )
 {
     std::complex< double >  res;
     
@@ -2069,27 +2031,27 @@ dot ( const blas_int_t  n,
 //
 inline
 float
-dotu ( const blas_int_t n,
-       const float * x, const blas_int_t incx,
-       const float * y, const blas_int_t incy )
+dotu ( const int_t n,
+       const float * x, const int_t incx,
+       const float * y, const int_t incy )
 {
     return dot( n, x, incx, y, incy );
 }
 
 inline
 double
-dotu ( const blas_int_t n,
-       const double * x, const blas_int_t incx,
-       const double * y, const blas_int_t incy )
+dotu ( const int_t n,
+       const double * x, const int_t incx,
+       const double * y, const int_t incy )
 {
     return dot( n, x, incx, y, incy );
 }
 
 inline
 std::complex< float >
-dotu ( const blas_int_t  n,
-       const std::complex< float > *  x, const blas_int_t  incx,
-       const std::complex< float > *  y, const blas_int_t  incy )
+dotu ( const int_t  n,
+       const std::complex< float > *  x, const int_t  incx,
+       const std::complex< float > *  y, const int_t  incy )
 {
     std::complex< float >  res;
     
@@ -2108,9 +2070,9 @@ dotu ( const blas_int_t  n,
 
 inline
 std::complex< double >
-dotu ( const blas_int_t  n,
-       const std::complex< double > *  x, const blas_int_t  incx,
-       const std::complex< double > *  y, const blas_int_t  incy )
+dotu ( const int_t  n,
+       const std::complex< double > *  x, const int_t  incx,
+       const std::complex< double > *  y, const int_t  incy )
 {
     std::complex< double >  res;
     
@@ -2131,8 +2093,8 @@ dotu ( const blas_int_t  n,
 // *norm2
 //
 #define HLRCOMPRESS_NORM2_FUNC( type, func, flops )                     \
-    inline typename real_type< type >::type_t                           \
-    norm2 ( const blas_int_t n, const type * x, const blas_int_t incx ) \
+    inline real_type_t< type >                           \
+    norm2 ( const int_t n, const type * x, const int_t incx ) \
     {                                                                   \
         return func( & n, x, & incx );                                  \
     }
@@ -2147,10 +2109,10 @@ HLRCOMPRESS_NORM2_FUNC( std::complex< double >, dznrm2_, ZDOT )
 //
 #define HLRCOMPRESS_GER_FUNC( type, func, flops )                       \
     inline                                                              \
-    void ger ( const blas_int_t n, const blas_int_t m, const type alpha, \
-               const type * x, const blas_int_t incx,                   \
-               const type * y, const blas_int_t incy,                   \
-               type * A, const blas_int_t ldA )                         \
+    void ger ( const int_t n, const int_t m, const type alpha, \
+               const type * x, const int_t incx,                   \
+               const type * y, const int_t incy,                   \
+               type * A, const int_t ldA )                         \
     {                                                                   \
         func( & n, & m, & alpha, x, & incx, y, & incy, A, & ldA );      \
     }
@@ -2165,10 +2127,10 @@ HLRCOMPRESS_GER_FUNC( std::complex< double >, zgerc_, ZGER )
 //
 #define HLRCOMPRESS_GERU_FUNC( type, func, flops )                      \
     inline                                                              \
-    void geru ( const blas_int_t n, const blas_int_t m, const type alpha, \
-                const type * x, const blas_int_t incx,                  \
-                const type * y, const blas_int_t incy,                  \
-                type * A, const blas_int_t ldA )                        \
+    void geru ( const int_t n, const int_t m, const type alpha, \
+                const type * x, const int_t incx,                  \
+                const type * y, const int_t incy,                  \
+                type * A, const int_t ldA )                        \
     {                                                                   \
         func( & n, & m, & alpha, x, & incx, y, & incy, A, & ldA );      \
     }
@@ -2183,10 +2145,10 @@ HLRCOMPRESS_GERU_FUNC( std::complex< double >, zgeru_, ZGER )
 //
 #define HLRCOMPRESS_GEMV_FUNC( type, func, flops )                      \
     inline                                                              \
-    void gemv ( const char trans, const blas_int_t n, const blas_int_t m, const type alpha, \
-                const type * A, const blas_int_t ldA,                   \
-                const type * x, const blas_int_t incx,                  \
-                const type beta, type * y, const blas_int_t incy ) {    \
+    void gemv ( const char trans, const int_t n, const int_t m, const type alpha, \
+                const type * A, const int_t ldA,                   \
+                const type * x, const int_t incx,                  \
+                const type beta, type * y, const int_t incy ) {    \
         char  ltrans = trans;                                           \
         if ( ! is_complex_type< type >::value && ( trans == 'C' ) )     \
             ltrans = 'T';                                               \
@@ -2203,8 +2165,8 @@ HLRCOMPRESS_GEMV_FUNC( std::complex< double >, zgemv_, ZGEMV )
 #define HLRCOMPRESS_TRMV_FUNC( type, func, flops )                      \
     inline                                                              \
     void trmv ( const char uplo, const char trans, const char diag,     \
-                const blas_int_t n, const type * A, const blas_int_t ldA, \
-                type * x, const blas_int_t incx ) {                     \
+                const int_t n, const type * A, const int_t ldA, \
+                type * x, const int_t incx ) {                     \
         char  ltrans = trans;                                           \
         if ( ! is_complex_type< type >::value && ( trans == 'C' ) )     \
             ltrans = 'T';                                               \
@@ -2221,8 +2183,8 @@ HLRCOMPRESS_TRMV_FUNC( std::complex< double >, ztrmv_, ZTRMV )
 #define HLRCOMPRESS_TRSV_FUNC( type, func, flops )                      \
     inline                                                              \
     void trsv ( const char uplo, const char trans, const char diag,     \
-                const blas_int_t n, const type * A, const blas_int_t ldA, \
-                type * b, const blas_int_t incb ) {                     \
+                const int_t n, const type * A, const int_t ldA, \
+                type * b, const int_t incb ) {                     \
         char  ltrans = trans;                                           \
         if ( ! is_complex_type< type >::value && ( trans == 'C' ) )     \
             ltrans = 'T';                                               \
@@ -2239,11 +2201,11 @@ HLRCOMPRESS_TRSV_FUNC( std::complex< double >, ztrsv_, ZTRSV )
 #define HLRCOMPRESS_GEMM_FUNC( type, func, flops )                      \
     inline                                                              \
     void gemm ( const char transA, const char transB,                   \
-                const blas_int_t n, const blas_int_t m, const blas_int_t k, \
+                const int_t n, const int_t m, const int_t k, \
                 const type alpha,                                       \
-                const type * A, const blas_int_t ldA,                   \
-                const type * B, const blas_int_t ldB,                   \
-                const type beta, type * C, const blas_int_t ldC ) {     \
+                const type * A, const int_t ldA,                   \
+                const type * B, const int_t ldB,                   \
+                const type beta, type * C, const int_t ldC ) {     \
         char  ltransA = transA;                                         \
         char  ltransB = transB;                                         \
         if ( ! is_complex_type< type >::value && ( transA == 'C' ) )    \
@@ -2265,8 +2227,8 @@ HLRCOMPRESS_GEMM_FUNC( std::complex< double >, zgemm_, ZGEMM )
 #define HLRCOMPRESS_TRMM_FUNC( type, func, flops )                      \
     inline                                                              \
     void trmm ( const char side, const char uplo, const char trans, const char diag, \
-                const blas_int_t n, const blas_int_t m, const type alpha, const type * A, \
-                const blas_int_t ldA, type * B, const blas_int_t ldB ) { \
+                const int_t n, const int_t m, const type alpha, const type * A, \
+                const int_t ldA, type * B, const int_t ldB ) { \
         char  ltrans = trans;                                           \
         if ( ! is_complex_type< type >::value && ( trans == 'C' ) )     \
             ltrans = 'T';                                               \
@@ -2283,8 +2245,8 @@ HLRCOMPRESS_TRMM_FUNC( std::complex< double >, ztrmm_, ZTRMM )
 #define HLRCOMPRESS_TRSM_FUNC( type, func, flops )                      \
     inline                                                              \
     void trsm ( const char side, const char uplo, const char trans, const char diag, \
-                const blas_int_t n, const blas_int_t m, const type alpha, const type * A, \
-                const blas_int_t ldA, type * B, const blas_int_t ldB ) { \
+                const int_t n, const int_t m, const type alpha, const type * A, \
+                const int_t ldA, type * B, const int_t ldB ) { \
         char  ltrans = trans;                                           \
         if ( ! is_complex_type< type >::value && ( trans == 'C' ) )     \
             ltrans = 'T';                                               \
@@ -2308,16 +2270,16 @@ HLRCOMPRESS_TRSM_FUNC( std::complex< double >, ztrsm_, ZTRSM )
 //
 // *gesv
 //
-#define HLRCOMPRESS_GESV_FUNC( type, func )                         \
-    inline void gesv ( const blas_int_t  n,                         \
-                       const blas_int_t  nrhs,                      \
-                       type *            A,                         \
-                       const blas_int_t  ldA,                       \
-                       blas_int_t *      ipiv,                      \
-                       type *            B,                         \
-                       const blas_int_t  ldB,                       \
-                       blas_int_t &      info ) {                   \
-        info = 0;                                                   \
+#define HLRCOMPRESS_GESV_FUNC( type, func )                    \
+    inline void gesv ( const int_t  n,                         \
+                       const int_t  nrhs,                      \
+                       type *       A,                         \
+                       const int_t  ldA,                       \
+                       int_t *      ipiv,                      \
+                       type *       B,                         \
+                       const int_t  ldB,                       \
+                       int_t &      info ) {                   \
+        info = 0;                                              \
         func( & n, & nrhs, A, & ldA, ipiv, B, & ldB, & info ); }
 
 HLRCOMPRESS_GESV_FUNC( float,                  sgesv_ )
@@ -2330,14 +2292,14 @@ HLRCOMPRESS_GESV_FUNC( std::complex< double >, zgesv_ )
 //
 // *trtri
 //
-#define HLRCOMPRESS_TRTRI_FUNC( type, func )                \
-    inline  void trtri ( const char        uplo,            \
-                         const char        diag,            \
-                         const blas_int_t  n,               \
-                         type *            A,               \
-                         const blas_int_t  ldA,             \
-                         blas_int_t &      info ) {         \
-        info = 0;                                           \
+#define HLRCOMPRESS_TRTRI_FUNC( type, func )           \
+    inline  void trtri ( const char   uplo,            \
+                         const char   diag,            \
+                         const int_t  n,               \
+                         type *       A,               \
+                         const int_t  ldA,             \
+                         int_t &      info ) {         \
+        info = 0;                                      \
         func( & uplo, & diag, & n, A, & ldA, & info ); }
 
 HLRCOMPRESS_TRTRI_FUNC( float,                  strtri_ )
@@ -2351,12 +2313,12 @@ HLRCOMPRESS_TRTRI_FUNC( std::complex< double >, ztrtri_ )
 // *getrf
 //
 #define HLRCOMPRESS_GETRF_FUNC( type, func, flops ) \
-    inline void getrf ( const blas_int_t  n,        \
-                        const blas_int_t  m,        \
-                        type *            A,        \
-                        const blas_int_t  ldA,      \
-                        blas_int_t *      ipiv,     \
-                        blas_int_t &      info ) {  \
+    inline void getrf ( const int_t  n,             \
+                        const int_t  m,             \
+                        type *       A,             \
+                        const int_t  ldA,           \
+                        int_t *      ipiv,          \
+                        int_t &      info ) {       \
         info = 0;                                   \
         func( & n, & m, A, & ldA, ipiv, & info ); }
 
@@ -2370,15 +2332,15 @@ HLRCOMPRESS_GETRF_FUNC( std::complex< double >, zgetrf_, ZGETRF )
 //
 // *getri
 //
-#define HLRCOMPRESS_GETRI_FUNC( type, func, flops )             \
-    inline void getri ( const blas_int_t  n,                    \
-                        type *            A,                    \
-                        const blas_int_t  ldA,                  \
-                        blas_int_t *      ipiv,                 \
-                        type *            work,                 \
-                        blas_int_t        lwork,                \
-                        blas_int_t &      info ) {              \
-        info = 0;                                               \
+#define HLRCOMPRESS_GETRI_FUNC( type, func, flops )        \
+    inline void getri ( const int_t  n,                    \
+                        type *       A,                    \
+                        const int_t  ldA,                  \
+                        int_t *      ipiv,                 \
+                        type *       work,                 \
+                        int_t        lwork,                \
+                        int_t &      info ) {              \
+        info = 0;                                          \
         func( & n, A, & ldA, ipiv, work, & lwork, & info ); }
 
 HLRCOMPRESS_GETRI_FUNC( float,                  sgetri_, SGETRI )
@@ -2391,16 +2353,16 @@ HLRCOMPRESS_GETRI_FUNC( std::complex< double >, zgetri_, ZGETRI )
 //
 // *geqrf
 //
-#define HLRCOMPRESS_GEQRF_FUNC( type, func, flops )                 \
-    inline void geqrf ( const blas_int_t  n,                        \
-                        const blas_int_t  m,                        \
-                        type *            A,                        \
-                        const blas_int_t  ldA,                      \
-                        type *            tau,                      \
-                        type *            work,                     \
-                        blas_int_t        lwork,                    \
-                        blas_int_t &      info ) {                  \
-        info = 0;                                                   \
+#define HLRCOMPRESS_GEQRF_FUNC( type, func, flops )            \
+    inline void geqrf ( const int_t  n,                        \
+                        const int_t  m,                        \
+                        type *       A,                        \
+                        const int_t  ldA,                      \
+                        type *       tau,                      \
+                        type *       work,                     \
+                        int_t        lwork,                    \
+                        int_t &      info ) {                  \
+        info = 0;                                              \
         func( & n, & m, A, & ldA, tau, work, & lwork, & info ); }
 
 HLRCOMPRESS_GEQRF_FUNC( float,                  sgeqrf_, SGEQRF )
@@ -2413,15 +2375,15 @@ HLRCOMPRESS_GEQRF_FUNC( std::complex< double >, zgeqrf_, ZGEQRF )
 //
 // *geqr2
 //
-#define HLRCOMPRESS_GEQR2_FUNC( type, func, flops )         \
-    inline void geqr2 ( const blas_int_t  n,                \
-                        const blas_int_t  m,                \
-                        type *            A,                \
-                        const blas_int_t  ldA,              \
-                        type *            tau,              \
-                        type *            work,             \
-                        blas_int_t &      info ) {          \
-        info = 0;                                           \
+#define HLRCOMPRESS_GEQR2_FUNC( type, func, flops )    \
+    inline void geqr2 ( const int_t  n,                \
+                        const int_t  m,                \
+                        type *       A,                \
+                        const int_t  ldA,              \
+                        type *       tau,              \
+                        type *       work,             \
+                        int_t &      info ) {          \
+        info = 0;                                      \
         func( & n, & m, A, & ldA, tau, work, & info ); }
 
 HLRCOMPRESS_GEQR2_FUNC( float,                  sgeqr2_, SGEQRF )
@@ -2434,17 +2396,17 @@ HLRCOMPRESS_GEQR2_FUNC( std::complex< double >, zgeqr2_, ZGEQRF )
 //
 // *orgqr
 //
-#define HLRCOMPRESS_ORGQR_FUNC( type, func, flops )                     \
-    inline void orgqr ( const blas_int_t  n,                            \
-                        const blas_int_t  m,                            \
-                        const blas_int_t  k,                            \
-                        type *            A,                            \
-                        const blas_int_t  ldA,                          \
-                        const type *      tau,                          \
-                        type *            work,                         \
-                        blas_int_t        lwork,                        \
-                        blas_int_t &      info ) {                      \
-        info = 0;                                                       \
+#define HLRCOMPRESS_ORGQR_FUNC( type, func, flops )                \
+    inline void orgqr ( const int_t  n,                            \
+                        const int_t  m,                            \
+                        const int_t  k,                            \
+                        type *       A,                            \
+                        const int_t  ldA,                          \
+                        const type * tau,                          \
+                        type *       work,                         \
+                        int_t        lwork,                        \
+                        int_t &      info ) {                      \
+        info = 0;                                                  \
         func( & n, & m, & k, A, & ldA, tau, work, & lwork, & info ); }
 
 HLRCOMPRESS_ORGQR_FUNC( float,             sorgqr_, SORGQR )
@@ -2457,16 +2419,16 @@ HLRCOMPRESS_ORGQR_FUNC( std::complex< double >, zungqr_, ZUNGQR )
 //
 // *org2r
 //
-#define HLRCOMPRESS_ORG2R_FUNC( type, func, flops )             \
-    inline void ung2r ( const blas_int_t  n,                    \
-                        const blas_int_t  m,                    \
-                        const blas_int_t  k,                    \
-                        type *            A,                    \
-                        const blas_int_t  ldA,                  \
-                        const type *      tau,                  \
-                        type *            work,                 \
-                        blas_int_t &      info ) {              \
-        info = 0;                                               \
+#define HLRCOMPRESS_ORG2R_FUNC( type, func, flops )        \
+    inline void ung2r ( const int_t  n,                    \
+                        const int_t  m,                    \
+                        const int_t  k,                    \
+                        type *       A,                    \
+                        const int_t  ldA,                  \
+                        const type * tau,                  \
+                        type *       work,                 \
+                        int_t &      info ) {              \
+        info = 0;                                          \
         func( & n, & m, & k, A, & ldA, tau, work, & info ); }
 
 HLRCOMPRESS_ORG2R_FUNC( float,                  sorg2r_, SORG2R )
@@ -2479,17 +2441,17 @@ HLRCOMPRESS_ORG2R_FUNC( std::complex< double >, zung2r_, ZUNG2R )
 //
 // *geqp3
 //
-#define HLRCOMPRESS_GEQP3_FUNC( type, func )                            \
-    inline void geqp3 ( const blas_int_t  n,                            \
-                        const blas_int_t  m,                            \
-                        type *            A,                            \
-                        const blas_int_t  ldA,                          \
-                        blas_int_t *      jpvt,                         \
-                        type *            tau,                          \
-                        type *            work,                         \
-                        blas_int_t        lwork,                        \
-                        typename real_type< type >::type_t *,           \
-                        blas_int_t &      info ) {                      \
+#define HLRCOMPRESS_GEQP3_FUNC( type, func )                       \
+    inline void geqp3 ( const int_t  n,                            \
+                        const int_t  m,                            \
+                        type *       A,                            \
+                        const int_t  ldA,                          \
+                        int_t *      jpvt,                         \
+                        type *       tau,                          \
+                        type *       work,                         \
+                        int_t        lwork,                        \
+                        real_type_t< type > *,                     \
+                        int_t &      info ) {                      \
         info = 0;                                                       \
         func( & n, & m, A, & ldA, jpvt, tau, work, & lwork, & info ); }
 
@@ -2499,16 +2461,16 @@ HLRCOMPRESS_GEQP3_FUNC( double, dgeqp3_ )
 #undef HLRCOMPRESS_GEQP3_FUNC
 
 #define HLRCOMPRESS_GEQP3_FUNC( type, func )                            \
-    inline void geqp3 ( const blas_int_t  n,                            \
-                        const blas_int_t  m,                            \
-                        type *            A,                            \
-                        const blas_int_t  ldA,                          \
-                        blas_int_t *      jpvt,                         \
-                        type *            tau,                          \
-                        type *            work,                         \
-                        blas_int_t        lwork,                        \
-                        typename real_type< type >::type_t *  rwork,    \
-                        blas_int_t &      info ) {                      \
+    inline void geqp3 ( const int_t            n,                       \
+                        const int_t            m,                       \
+                        type *                 A,                       \
+                        const int_t            ldA,                     \
+                        int_t *                jpvt,                    \
+                        type *                 tau,                     \
+                        type *                 work,                    \
+                        int_t                  lwork,                   \
+                        real_type_t< type > *  rwork,                   \
+                        int_t &                info ) {                 \
         info = 0;                                                       \
         func( & n, & m, A, & ldA, jpvt, tau, work, & lwork, rwork, & info ); }
 
@@ -2520,18 +2482,18 @@ HLRCOMPRESS_GEQP3_FUNC( std::complex< double >, zgeqp3_ )
 //
 // *syev/*heev
 //
-#define HLRCOMPRESS_HEEV_FUNC( type, func )                             \
-    inline void heev ( const char        jobz,                          \
-                       const char        uplo,                          \
-                       const blas_int_t  n,                             \
-                       type *            A,                             \
-                       const blas_int_t  ldA,                           \
-                       type *            W,                             \
-                       type *            work,                          \
-                       const blas_int_t  lwork,                         \
-                       type *,                                          \
-                       blas_int_t &      info ) {                       \
-        info = 0;                                                       \
+#define HLRCOMPRESS_HEEV_FUNC( type, func )                        \
+    inline void heev ( const char   jobz,                          \
+                       const char   uplo,                          \
+                       const int_t  n,                             \
+                       type *       A,                             \
+                       const int_t  ldA,                           \
+                       type *       W,                             \
+                       type *       work,                          \
+                       const int_t  lwork,                         \
+                       type *,                                     \
+                       int_t &      info ) {                       \
+        info = 0;                                                  \
         func( & jobz, & uplo, & n, A, & ldA, W, work, & lwork, & info ); }
 
 HLRCOMPRESS_HEEV_FUNC( float,  ssyev_ )
@@ -2542,27 +2504,27 @@ HLRCOMPRESS_HEEV_FUNC( double, dsyev_ )
 //
 // *syevx/*heevx
 //
-#define HLRCOMPRESS_HEEVX_FUNC( type, func )                            \
-    inline void heevx ( const char                  jobz,               \
-                        const char                  uplo,               \
-                        const blas_int_t            n,                  \
-                        type *                      A,                  \
-                        const blas_int_t            ldA,                \
-                        const blas_int_t            il,                 \
-                        const blas_int_t            iu,                 \
-                        blas_int_t &                m,                  \
-                        real_type< type >::type_t *  W,                 \
-                        type *                      Z,                  \
-                        const blas_int_t            ldZ,                \
-                        type *                      work,               \
-                        const blas_int_t            lwork,              \
-                        blas_int_t *                iwork,              \
-                        blas_int_t &                info ) {            \
-        char                      range = 'I';                          \
-        real_type< type >::type_t  vl, vu;                              \
-        real_type< type >::type_t  abstol = 0;                          \
-        blas_int_t                       ifail  = 0;                    \
-        info = 0;                                                       \
+#define HLRCOMPRESS_HEEVX_FUNC( type, func )                      \
+    inline void heevx ( const char             jobz,              \
+                        const char             uplo,              \
+                        const int_t            n,                 \
+                        type *                 A,                 \
+                        const int_t            ldA,               \
+                        const int_t            il,                \
+                        const int_t            iu,                \
+                        int_t &                m,                 \
+                        real_type_t< type > *  W,                 \
+                        type *                 Z,                 \
+                        const int_t            ldZ,               \
+                        type *                 work,              \
+                        const int_t            lwork,             \
+                        int_t *                iwork,             \
+                        int_t &                info ) {           \
+        char                       range = 'I';                   \
+        real_type_t< type >  vl, vu;                        \
+        real_type_t< type >  abstol = 0;                    \
+        int_t                      ifail  = 0;                    \
+        info = 0;                                                 \
         func( & jobz, & range, & uplo, & n, A, & ldA, & vl, & vu, & il, & iu, \
               & abstol, & m, W, Z, & ldZ, work, & lwork, iwork, & ifail, & info ); }
 
@@ -2574,16 +2536,16 @@ HLRCOMPRESS_HEEVX_FUNC( double, dsyevx_ )
 //
 // sstev/dstev
 //
-#define HLRCOMPRESS_STEV_FUNC( type, func )                     \
-    inline void stev ( const char        jobz,                  \
-                       const blas_int_t  n,                     \
-                       type *            D,                     \
-                       type *            E,                     \
-                       type *            Z,                     \
-                       const blas_int_t  ldZ,                   \
-                       type *            work,                  \
-                       blas_int_t &      info ) {               \
-        info = 0;                                               \
+#define HLRCOMPRESS_STEV_FUNC( type, func )                \
+    inline void stev ( const char   jobz,                  \
+                       const int_t  n,                     \
+                       type *       D,                     \
+                       type *       E,                     \
+                       type *       Z,                     \
+                       const int_t  ldZ,                   \
+                       type *       work,                  \
+                       int_t &      info ) {               \
+        info = 0;                                          \
         func( & jobz, & n, D, E, Z, & ldZ, work, & info ); }
 
 HLRCOMPRESS_STEV_FUNC( float,  sstev_ )
@@ -2594,23 +2556,23 @@ HLRCOMPRESS_STEV_FUNC( double, dstev_ )
 //
 // *gesvd
 //
-#define HLRCOMPRESS_GESVD_FUNC( type, func, flops )                     \
-    inline void gesvd ( const char                  jobu,               \
-                        const char                  jobv,               \
-                        const blas_int_t            n,                  \
-                        const blas_int_t            m,                  \
-                        type *                      A,                  \
-                        const blas_int_t            ldA,                \
-                        real_type< type >::type_t *  S,                 \
-                        type *                      U,                  \
-                        const blas_int_t            ldU,                \
-                        type *                      VT,                 \
-                        const blas_int_t            ldVT,               \
-                        type *                      work,               \
-                        const blas_int_t            lwork,              \
-                        real_type< type >::type_t *,                    \
-                        blas_int_t &                info ) {            \
-        info = 0;                                                       \
+#define HLRCOMPRESS_GESVD_FUNC( type, func, flops )               \
+    inline void gesvd ( const char             jobu,              \
+                        const char             jobv,              \
+                        const int_t            n,                 \
+                        const int_t            m,                 \
+                        type *                 A,                 \
+                        const int_t            ldA,               \
+                        real_type_t< type > *  S,                 \
+                        type *                 U,                 \
+                        const int_t            ldU,               \
+                        type *                 VT,                \
+                        const int_t            ldVT,              \
+                        type *                 work,              \
+                        const int_t            lwork,             \
+                        real_type_t< type > *,                    \
+                        int_t &                info ) {           \
+        info = 0;                                                 \
         func( & jobu, & jobv, & n, & m, A, & ldA, S, U, & ldU, VT, & ldVT, work, & lwork, & info ); }
 
 HLRCOMPRESS_GESVD_FUNC( float,  sgesvd_, SGESVD )
@@ -2618,23 +2580,23 @@ HLRCOMPRESS_GESVD_FUNC( double, dgesvd_, DGESVD )
 
 #undef  HLRCOMPRESS_GESVD_FUNC
 
-#define HLRCOMPRESS_GESVD_FUNC( type, func, flops )                     \
-    inline void gesvd ( const char                  jobu,               \
-                        const char                  jobv,               \
-                        const blas_int_t            n,                  \
-                        const blas_int_t            m,                  \
-                        type *                      A,                  \
-                        const blas_int_t            ldA,                \
-                        real_type< type >::type_t *  S,                 \
-                        type *                      U,                  \
-                        const blas_int_t            ldU,                \
-                        type *                      VT,                 \
-                        const blas_int_t            ldVT,               \
-                        type *                      work,               \
-                        const blas_int_t            lwork,              \
-                        real_type< type >::type_t *  rwork,             \
-                        blas_int_t &                info ) {            \
-        info = 0;                                                       \
+#define HLRCOMPRESS_GESVD_FUNC( type, func, flops )               \
+    inline void gesvd ( const char             jobu,              \
+                        const char             jobv,              \
+                        const int_t            n,                 \
+                        const int_t            m,                 \
+                        type *                 A,                 \
+                        const int_t            ldA,               \
+                        real_type_t< type > *  S,                 \
+                        type *                 U,                 \
+                        const int_t            ldU,               \
+                        type *                 VT,                \
+                        const int_t            ldVT,              \
+                        type *                 work,              \
+                        const int_t            lwork,             \
+                        real_type_t< type > *  rwork,             \
+                        int_t &                info ) {           \
+        info = 0;                                                 \
         func( & jobu, & jobv, & n, & m, A, & ldA, S, U, & ldU, VT, & ldVT, work, & lwork, rwork, & info ); }
 
 HLRCOMPRESS_GESVD_FUNC( std::complex< float >,  cgesvd_, CGESVD )
@@ -2645,23 +2607,23 @@ HLRCOMPRESS_GESVD_FUNC( std::complex< double >, zgesvd_, CGESVD )
 //
 // *gesdd
 //
-#define HLRCOMPRESS_GESDD_FUNC( type, func, flops )                     \
-    inline void gesdd ( const char                  jobz,               \
-                        const blas_int_t            n,                  \
-                        const blas_int_t            m,                  \
-                        type *                      A,                  \
-                        const blas_int_t            ldA,                \
-                        real_type< type >::type_t *  S,                 \
-                        type *                      U,                  \
-                        const blas_int_t            ldU,                \
-                        type *                      VT,                 \
-                        const blas_int_t            ldVT,               \
-                        type *                      work,               \
-                        const blas_int_t            lwork,              \
-                        real_type< type >::type_t *,                    \
-                        blas_int_t *                iwork,              \
-                        blas_int_t &                info ) {            \
-        info = 0;                                                       \
+#define HLRCOMPRESS_GESDD_FUNC( type, func, flops )               \
+    inline void gesdd ( const char             jobz,              \
+                        const int_t            n,                 \
+                        const int_t            m,                 \
+                        type *                 A,                 \
+                        const int_t            ldA,               \
+                        real_type_t< type > *  S,                 \
+                        type *                 U,                 \
+                        const int_t            ldU,               \
+                        type *                 VT,                \
+                        const int_t            ldVT,              \
+                        type *                 work,              \
+                        const int_t            lwork,             \
+                        real_type_t< type > *,                    \
+                        int_t *                iwork,             \
+                        int_t &                info ) {           \
+        info = 0;                                                 \
         func( & jobz, & n, & m, A, & ldA, S, U, & ldU, VT, & ldVT, work, & lwork, iwork, & info ); }
 
 HLRCOMPRESS_GESDD_FUNC( float,  sgesdd_, SGESDD )
@@ -2669,23 +2631,23 @@ HLRCOMPRESS_GESDD_FUNC( double, dgesdd_, DGESDD )
 
 #undef  HLRCOMPRESS_GESDD_FUNC
 
-#define HLRCOMPRESS_GESDD_FUNC( type, func, flops )                     \
-    inline void gesdd ( const char                  jobz,               \
-                        const blas_int_t            n,                  \
-                        const blas_int_t            m,                  \
-                        type *                      A,                  \
-                        const blas_int_t            ldA,                \
-                        real_type< type >::type_t *  S,                 \
-                        type *                      U,                  \
-                        const blas_int_t            ldU,                \
-                        type *                      VT,                 \
-                        const blas_int_t            ldVT,               \
-                        type *                      work,               \
-                        const blas_int_t            lwork,              \
-                        real_type< type >::type_t *  rwork,             \
-                        blas_int_t *                iwork,              \
-                        blas_int_t &                info ) {            \
-        info = 0;                                                       \
+#define HLRCOMPRESS_GESDD_FUNC( type, func, flops )               \
+    inline void gesdd ( const char             jobz,              \
+                        const int_t            n,                 \
+                        const int_t            m,                 \
+                        type *                 A,                 \
+                        const int_t            ldA,               \
+                        real_type_t< type > *  S,                 \
+                        type *                 U,                 \
+                        const int_t            ldU,               \
+                        type *                 VT,                \
+                        const int_t            ldVT,              \
+                        type *                 work,              \
+                        const int_t            lwork,             \
+                        real_type_t< type > *  rwork,             \
+                        int_t *                iwork,             \
+                        int_t &                info ) {           \
+        info = 0;                                                 \
         func( & jobz, & n, & m, A, & ldA, S, U, & ldU, VT, & ldVT, work, & lwork, rwork, iwork, & info ); }
 
 HLRCOMPRESS_GESDD_FUNC( std::complex< float >,  cgesdd_, CGESDD )
@@ -2693,24 +2655,24 @@ HLRCOMPRESS_GESDD_FUNC( std::complex< double >, zgesdd_, ZGESDD )
 
 #undef  HLRCOMPRESS_GESDD_FUNC
 
-#define HLRCOMPRESS_GESVJ_FUNC( type, func )                            \
-    inline void gesvj ( const char                  joba,               \
-                        const char                  jobu,               \
-                        const char                  jobv,               \
-                        const blas_int_t            n,                  \
-                        const blas_int_t            m,                  \
-                        type *                      A,                  \
-                        const blas_int_t            ldA,                \
-                        real_type< type >::type_t * S,                  \
-                        const blas_int_t            mv,                 \
-                        type *                      V,                  \
-                        const blas_int_t            ldV,                \
-                        type *                      cwork,              \
-                        const blas_int_t            lwork,              \
-                        real_type< type >::type_t *,                    \
-                        const blas_int_t,                               \
-                        blas_int_t &                info ) {            \
-        info = 0;                                                       \
+#define HLRCOMPRESS_GESVJ_FUNC( type, func )                       \
+    inline void gesvj ( const char             joba,               \
+                        const char             jobu,               \
+                        const char             jobv,               \
+                        const int_t            n,                  \
+                        const int_t            m,                  \
+                        type *                 A,                  \
+                        const int_t            ldA,                \
+                        real_type_t< type > *  S,                  \
+                        const int_t            mv,                 \
+                        type *                 V,                  \
+                        const int_t            ldV,                \
+                        type *                 cwork,              \
+                        const int_t            lwork,              \
+                        real_type_t< type > *,                     \
+                        const int_t,                               \
+                        int_t &                info ) {            \
+        info = 0;                                                  \
         func( & joba, & jobu, & jobv, & n, & m, A, & ldA, S, & mv, V, & ldV, cwork, & lwork, & info ); }
 
 HLRCOMPRESS_GESVJ_FUNC( float,  sgesvj_ )
@@ -2718,24 +2680,24 @@ HLRCOMPRESS_GESVJ_FUNC( double, dgesvj_ )
 
 #undef  HLRCOMPRESS_GESVJ_FUNC
 
-#define HLRCOMPRESS_GESVJ_FUNC( type, func )                            \
-    inline void gesvj ( const char                  joba,               \
-                        const char                  jobu,               \
-                        const char                  jobv,               \
-                        const blas_int_t            n,                  \
-                        const blas_int_t            m,                  \
-                        type *                      A,                  \
-                        const blas_int_t            ldA,                \
-                        real_type< type >::type_t * S,                  \
-                        const blas_int_t            mv,                 \
-                        type *                      V,                  \
-                        const blas_int_t            ldV,                \
-                        type *                      cwork,              \
-                        const blas_int_t            lwork,              \
-                        real_type< type >::type_t * rwork,              \
-                        const blas_int_t            lrwork,             \
-                        blas_int_t &                info ) {            \
-        info = 0;                                                       \
+#define HLRCOMPRESS_GESVJ_FUNC( type, func )                       \
+    inline void gesvj ( const char             joba,               \
+                        const char             jobu,               \
+                        const char             jobv,               \
+                        const int_t            n,                  \
+                        const int_t            m,                  \
+                        type *                 A,                  \
+                        const int_t            ldA,                \
+                        real_type_t< type > *  S,                  \
+                        const int_t            mv,                 \
+                        type *                 V,                  \
+                        const int_t            ldV,                \
+                        type *                 cwork,              \
+                        const int_t            lwork,              \
+                        real_type_t< type > *  rwork,              \
+                        const int_t            lrwork,             \
+                        int_t &                info ) {            \
+        info = 0;                                                  \
         func( & joba, & jobu, & jobv, & n, & m, A, & ldA, S, & mv, V, & ldV, cwork, & lwork, rwork, & lrwork, & info ); }
 
 HLRCOMPRESS_GESVJ_FUNC( std::complex< float >,  cgesvj_ )
@@ -2746,12 +2708,12 @@ HLRCOMPRESS_GESVJ_FUNC( std::complex< double >, zgesvj_ )
 //
 // *larfg
 //
-#define HLRCOMPRESS_LARFG_FUNC( type, func )        \
-    inline void larfg ( const blas_int_t  n,        \
-                        type &            alpha,    \
-                        type *            x,        \
-                        const blas_int_t  incx,     \
-                        type &            tau ) {   \
+#define HLRCOMPRESS_LARFG_FUNC( type, func )   \
+    inline void larfg ( const int_t  n,        \
+                        type &       alpha,    \
+                        type *       x,        \
+                        const int_t  incx,     \
+                        type &       tau ) {   \
         func( & n, & alpha, x, & incx, & tau ); }
 
 HLRCOMPRESS_LARFG_FUNC( float,                  slarfg_ )
@@ -2765,16 +2727,16 @@ HLRCOMPRESS_LARFG_FUNC( std::complex< double >, zlarfg_ )
 // *larf
 //
 // apply householder reflection
-#define HLRCOMPRESS_LARF_FUNC( type, func )                             \
-    inline void larf ( const char        side,                          \
-                       const blas_int_t  n,                             \
-                       const blas_int_t  m,                             \
-                       const type *      V,                             \
-                       const blas_int_t  incv,                          \
-                       const type        tau,                           \
-                       type *            C,                             \
-                       const blas_int_t  ldc,                           \
-                       type *            work ) {                       \
+#define HLRCOMPRESS_LARF_FUNC( type, func )                        \
+    inline void larf ( const char   side,                          \
+                       const int_t  n,                             \
+                       const int_t  m,                             \
+                       const type * V,                             \
+                       const int_t  incv,                          \
+                       const type   tau,                           \
+                       type *       C,                             \
+                       const int_t  ldc,                           \
+                       type *       work ) {                       \
         func( & side, & n, & m, V, & incv, & tau, C, & ldc, work ); }
 
 HLRCOMPRESS_LARF_FUNC( float,                  slarf_ )

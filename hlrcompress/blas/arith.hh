@@ -65,10 +65,10 @@ std::enable_if_t< is_vector_v< T2 > &&
 scale ( const T1  f,
         T2 &      x )
 {
-    scal( blas_int_t(x.length()),
+    scal( int_t(x.length()),
           f,
           x.data(),
-          blas_int_t(x.stride()) );
+          int_t(x.stride()) );
 }
 
 //
@@ -85,11 +85,11 @@ copy ( const T1 &  x,
 {
     HLRCOMPRESS_DBG_ASSERT( x.length() == y.length() );
 
-    copy( blas_int_t(x.length()),
+    copy( int_t(x.length()),
           x.data(),
-          blas_int_t(x.stride()),
+          int_t(x.stride()),
           y.data(),
-          blas_int_t(y.stride()) );
+          int_t(y.stride()) );
 }
 
 //
@@ -106,11 +106,11 @@ swap ( T1 &  x,
 {
     HLRCOMPRESS_DBG_ASSERT( x.length() == y.length() );
 
-    swap( blas_int_t(x.length()),
+    swap( int_t(x.length()),
           x.data(),
-          blas_int_t(x.stride()),
+          int_t(x.stride()),
           y.data(),
-          blas_int_t(y.stride()) );
+          int_t(y.stride()) );
 }
 
 //
@@ -122,9 +122,9 @@ max_idx ( const T1 &  x )
 {
     HLRCOMPRESS_DBG_ASSERT( x.length() > 0 );
 
-    auto  res = idx_t( max_idx( blas_int_t(x.length()),
+    auto  res = idx_t( max_idx( int_t(x.length()),
                                 x.data(),
-                                blas_int_t(x.stride()) ) - 1 );
+                                int_t(x.stride()) ) - 1 );
 
     return res;
 }
@@ -176,12 +176,12 @@ add ( const T1    alpha,
 {
     HLRCOMPRESS_DBG_ASSERT( x.length() == y.length() );
     
-    axpy( blas_int_t(x.length()),
+    axpy( int_t(x.length()),
           alpha,
           x.data(),
-          blas_int_t(x.stride()),
+          int_t(x.stride()),
           y.data(),
-          blas_int_t(y.stride()) );
+          int_t(y.stride()) );
 }
 
 //
@@ -198,11 +198,11 @@ dot ( const T1 &  x,
 {
     HLRCOMPRESS_DBG_ASSERT( x.length() == y.length() );
 
-    auto  res = dot( blas_int_t(x.length()),
+    auto  res = dot( int_t(x.length()),
                      x.data(),
-                     blas_int_t(x.stride()),
+                     int_t(x.stride()),
                      y.data(),
-                     blas_int_t(y.stride()) );
+                     int_t(y.stride()) );
 
     return res;
 }
@@ -221,11 +221,11 @@ dotu ( const T1 &  x,
 {
     HLRCOMPRESS_DBG_ASSERT( x.length() == y.length() );
 
-    auto  res = dotu( blas_int_t(x.length()),
+    auto  res = dotu( int_t(x.length()),
                       x.data(),
-                      blas_int_t(x.stride()),
+                      int_t(x.stride()),
                       y.data(),
-                      blas_int_t(y.stride()) );
+                      int_t(y.stride()) );
 
     return res;
 }
@@ -314,9 +314,9 @@ typename std::enable_if< is_vector_v< T1 >,
                          real_type_t< typename T1::value_t > >::type
 norm2 ( const T1 &  x )
 {
-    auto  res = norm2( blas_int_t(x.length()),
+    auto  res = norm2( int_t(x.length()),
                        x.data(),
-                       blas_int_t(x.stride()) );
+                       int_t(x.stride()) );
 
     return res;
 }
@@ -594,16 +594,16 @@ mulvec ( const T1    alpha,
     if ( A.row_stride() == 1 )
     {
         gemv( char( A.blas_view() ),
-              blas_int_t(A.blas_nrows()),
-              blas_int_t(A.blas_ncols()),
+              int_t(A.blas_nrows()),
+              int_t(A.blas_ncols()),
               alpha,
               A.data(),
-              blas_int_t(A.col_stride()),
+              int_t(A.col_stride()),
               x.data(),
-              blas_int_t(x.stride()),
+              int_t(x.stride()),
               beta,
               y.data(),
-              blas_int_t(y.stride()) );
+              int_t(y.stride()) );
     }// if
     else
     {
@@ -658,16 +658,16 @@ mulvec ( const T1    alpha,
     if ( A.row_stride() == 1 )
     {
         gemv( char( A.blas_view() ),
-              blas_int_t(A.blas_nrows()),
-              blas_int_t(A.blas_ncols()),
+              int_t(A.blas_nrows()),
+              int_t(A.blas_ncols()),
               alpha,
               A.data(),
-              blas_int_t(A.col_stride()),
+              int_t(A.col_stride()),
               x.data(),
-              blas_int_t(x.stride()),
+              int_t(x.stride()),
               value_t(1),
               y.data(),
-              blas_int_t(y.stride()) );
+              int_t(y.stride()) );
     }// if
     else
     {
@@ -717,16 +717,16 @@ prod ( const T1    alpha,
     
     gemm( char( A.blas_view() ),
           char( B.blas_view() ),
-          blas_int_t(C.nrows()),
-          blas_int_t(C.ncols()),
-          blas_int_t(A.ncols()),
+          int_t(C.nrows()),
+          int_t(C.ncols()),
+          int_t(A.ncols()),
           alpha, A.data(),
-          blas_int_t(A.col_stride()),
+          int_t(A.col_stride()),
           B.data(),
-          blas_int_t(B.col_stride()),
+          int_t(B.col_stride()),
           beta,
           C.data(),
-          blas_int_t(C.col_stride()) );
+          int_t(C.col_stride()) );
 }
 
 //
@@ -754,16 +754,16 @@ prod ( const T1    alpha,
 
     gemm( char( A.blas_view() ),
           char( B.blas_view() ),
-          blas_int_t(C.nrows()),
-          blas_int_t(C.ncols()),
-          blas_int_t(A.ncols()),
+          int_t(C.nrows()),
+          int_t(C.ncols()),
+          int_t(A.ncols()),
           alpha, A.data(),
-          blas_int_t(A.col_stride()),
+          int_t(A.col_stride()),
           B.data(),
-          blas_int_t(B.col_stride()),
+          int_t(B.col_stride()),
           value_t(1),  // C is initialised with zero
           C.data(),
-          blas_int_t(C.col_stride()) );
+          int_t(C.col_stride()) );
 
     return C;
 }
@@ -853,9 +853,9 @@ normF ( const T1 & M )
 
     if ( M.col_stride() == n * M.row_stride() )
     {
-        return norm2( blas_int_t(n*m),
+        return norm2( int_t(n*m),
                       M.data(),
-                      blas_int_t(M.row_stride()) );
+                      int_t(M.row_stride()) );
     }// if
     else
     {
@@ -1016,7 +1016,7 @@ qr  ( matrix< value_t > &  M,
     const auto              minrc = std::min( nrows, ncols );
     std::vector< value_t >  tau( ncols );
     std::vector< value_t >  work( ncols );
-    blas_int_t              info = 0;
+    int_t              info = 0;
 
     geqr2( nrows, ncols, M.data(), nrows, tau.data(), work.data(), info );
 
@@ -1084,17 +1084,17 @@ template < typename T1 >
 std::enable_if_t< is_matrix_v< T1 >, void >
 qrp    ( T1 &                              A,
          matrix< typename T1::value_t > &  R,
-         std::vector< blas_int_t > &       P )
+         std::vector< int_t > &       P )
 {
     using  value_t = value_type_t< T1 >;
     using  real_t  = real_type_t< value_t >;
     
-    const auto  n     = blas_int_t( A.nrows() );
-    const auto  m     = blas_int_t( A.ncols() );
+    const auto  n     = int_t( A.nrows() );
+    const auto  m     = int_t( A.ncols() );
     const auto  minnm = std::min( n, m );
-    blas_int_t  info  = 0;
+    int_t  info  = 0;
 
-    if ( blas_int_t( P.size() ) != m )
+    if ( int_t( P.size() ) != m )
         P.resize( m );
     
     //
@@ -1105,20 +1105,20 @@ qrp    ( T1 &                              A,
     value_t  work_query = value_t(0);
     auto     rwork      = vector< real_t >( 2*m );
 
-    geqp3( n, m, A.data(), blas_int_t( A.col_stride() ), P.data(),
+    geqp3( n, m, A.data(), int_t( A.col_stride() ), P.data(),
            & dummy, & work_query, LAPACK_WS_QUERY, rwork.data(), info );
 
     HLRCOMPRESS_ASSERT( info == 0 );
     
-    auto   lwork = blas_int_t( std::real( work_query ) );
+    auto   lwork = int_t( std::real( work_query ) );
 
-    orgqr( n, minnm, minnm, A.data(), blas_int_t( A.col_stride() ), & dummy,
+    orgqr( n, minnm, minnm, A.data(), int_t( A.col_stride() ), & dummy,
            & work_query, LAPACK_WS_QUERY, info );
     
     HLRCOMPRESS_ASSERT( info == 0 );
 
     // adjust work space size
-    lwork = std::max( lwork, blas_int_t( std::real( work_query ) ) );
+    lwork = std::max( lwork, int_t( std::real( work_query ) ) );
     
     auto       tmp_space = vector< value_t >( lwork + m );
     value_t *  work      = tmp_space.data();
@@ -1128,7 +1128,7 @@ qrp    ( T1 &                              A,
     // compute Householder vectors and R
     //
     
-    geqp3( n, m, A.data(), blas_int_t( A.col_stride() ), P.data(), tau, work, lwork, rwork.data(), info );
+    geqp3( n, m, A.data(), int_t( A.col_stride() ), P.data(), tau, work, lwork, rwork.data(), info );
     
     HLRCOMPRESS_ASSERT( info == 0 );
 
@@ -1136,12 +1136,12 @@ qrp    ( T1 &                              A,
     // copy upper triangular matrix to R
     //
 
-    if (( blas_int_t( R.nrows() ) != m ) || ( blas_int_t( R.ncols() ) != m ))
+    if (( int_t( R.nrows() ) != m ) || ( int_t( R.ncols() ) != m ))
         R = std::move( matrix< value_t >( m, m ) );
     else
         fill( value_t(0), R );
     
-    for ( blas_int_t  i = 0; i < m; i++ )
+    for ( int_t  i = 0; i < m; i++ )
     {
         const auto         irange = range( 0, std::min( i, minnm-1 ) );
         vector< value_t >  colA( A, irange, i );
@@ -1154,7 +1154,7 @@ qrp    ( T1 &                              A,
     // compute Q
     //
     
-    orgqr( n, minnm, minnm, A.data(), blas_int_t( A.col_stride() ), tau, work, lwork, info );
+    orgqr( n, minnm, minnm, A.data(), int_t( A.col_stride() ), tau, work, lwork, info );
 
     if ( n < m )
     {
@@ -1176,7 +1176,7 @@ qrp    ( T1 &                              A,
     // adjount indices in P (1-counted to 0-counted)
     //
 
-    for ( blas_int_t  i = 0; i < m; i++ )
+    for ( int_t  i = 0; i < m; i++ )
         --P[i];
 }
 
@@ -1187,17 +1187,17 @@ qrp    ( T1 &                              A,
 //
 template < typename T1 >
 std::enable_if_t< is_matrix_v< T1 >, void >
-svd    ( T1 &                                                      A,
+svd    ( T1 &                                             A,
          vector< real_type_t< typename T1::value_t > > &  S,
-         matrix< typename T1::value_t > &                          V )
+         matrix< typename T1::value_t > &                 V )
 {
     using  value_t = typename T1::value_t;
     using  real_t  = real_type_t< value_t >;
 
-    const blas_int_t    n      = blas_int_t( A.nrows() );
-    const blas_int_t    m      = blas_int_t( A.ncols() );
-    const blas_int_t    min_nm = std::min( n, m );
-    blas_int_t          info   = 0;
+    const int_t    n      = int_t( A.nrows() );
+    const int_t    m      = int_t( A.ncols() );
+    const int_t    min_nm = std::min( n, m );
+    int_t          info   = 0;
     value_t             work_query = value_t(0);
     matrix< value_t >   VT( min_nm, A.ncols() );
     value_t             vdummy = 0;
@@ -1208,15 +1208,15 @@ svd    ( T1 &                                                      A,
     
     // work space query
     gesvd( 'O', 'S',
-           blas_int_t( A.nrows() ),
-           blas_int_t( A.ncols() ),
+           int_t( A.nrows() ),
+           int_t( A.ncols() ),
            A.data(),
-           blas_int_t( A.col_stride() ),
+           int_t( A.col_stride() ),
            S.data(),
            & vdummy,
-           blas_int_t( A.col_stride() ),
+           int_t( A.col_stride() ),
            & vdummy,
-           blas_int_t( VT.col_stride() ),
+           int_t( VT.col_stride() ),
            & work_query,
            LAPACK_WS_QUERY,
            & rdummy,
@@ -1224,20 +1224,20 @@ svd    ( T1 &                                                      A,
 
     HLRCOMPRESS_ASSERT( info == 0 );
         
-    const blas_int_t   lwork = blas_int_t( std::real( work_query ) );
+    const int_t   lwork = int_t( std::real( work_query ) );
     vector< value_t >  work( lwork );
     vector< real_t >   rwork( 5 * min_nm );
     
     gesvd( 'O', 'S',
-           blas_int_t( A.nrows() ),
-           blas_int_t( A.ncols() ),
+           int_t( A.nrows() ),
+           int_t( A.ncols() ),
            A.data(),
-           blas_int_t( A.col_stride() ),
+           int_t( A.col_stride() ),
            S.data(),
            & vdummy,
-           blas_int_t( A.col_stride() ),
+           int_t( A.col_stride() ),
            VT.data(),
-           blas_int_t( VT.col_stride() ),
+           int_t( VT.col_stride() ),
            work.data(),
            lwork,
            rwork.data(),

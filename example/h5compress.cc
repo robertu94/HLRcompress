@@ -17,11 +17,12 @@
 #include <hlrcompress/compress.hh>
 #include <hlrcompress/approx/svd.hh>
 #include <hlrcompress/approx/rrqr.hh>
+#include <hlrcompress/approx/randsvd.hh>
 #include <hlrcompress/hlr/error.hh>
 
 using namespace hlrcompress;
 
-const blas::matrix< double >
+const blas::matrix< float >
 read_matrix ( const char *  filename );
 
 int
@@ -53,7 +54,7 @@ main ( int      argc,
     #endif
     
     auto        tic    = std::chrono::high_resolution_clock::now();
-    auto        zM     = compress< double, decltype(apx) >( M, acc, apx, ntile, zconf.get() );
+    auto        zM     = compress< float, decltype(apx) >( M, acc, apx, ntile, zconf.get() );
     auto        toc    = std::chrono::duration_cast< std::chrono::microseconds >( std::chrono::high_resolution_clock::now() - tic );
 
     std::cout << "runtime:      " << std::defaultfloat << toc.count() / 1e6 << " s" << std::endl;
@@ -115,7 +116,7 @@ visit_func ( hid_t               /* loc_id */,
     return 0;
 }
 
-const blas::matrix< double >
+const blas::matrix< float >
 read_matrix ( const char *  filename )
 {
     auto  file      = H5Fopen( filename, H5F_ACC_RDONLY, H5P_DEFAULT );
@@ -123,11 +124,11 @@ read_matrix ( const char *  filename )
     auto  status    = H5Ovisit( file, H5_INDEX_NAME, H5_ITER_INC, visit_func, & data_name );
 
     if ( status != 0 )
-        return blas::matrix< double >( 0, 0 );
+        return blas::matrix< float >( 0, 0 );
 
     // check if any compatible type found
     if ( data_name == "" )
-        return blas::matrix< double >( 0, 0 );
+        return blas::matrix< float >( 0, 0 );
 
     // data_name = data_name + "/value";
     
@@ -143,12 +144,12 @@ read_matrix ( const char *  filename )
     
     // std::cout << dims[0] << " × " << dims[1] << std::endl;
 
-    auto  M = blas::matrix< double >( dims[0], dims[1] );
+    auto  M = blas::matrix< float >( dims[0], dims[1] );
 
-    status = H5Dread( dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, M.data() );
+    status = H5Dread( dataset, H5T_NATIVE_FLOAT, H5S_ALL, H5S_ALL, H5P_DEFAULT, M.data() );
     
     if ( status != 0 )
-        return blas::matrix< double >( 0, 0 );
+        return blas::matrix< float >( 0, 0 );
     
     return  M;
 }

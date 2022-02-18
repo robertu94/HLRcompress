@@ -87,7 +87,7 @@ rrqr ( blas::matrix< value_t > &  M,
     //
 
     auto  R = blas::matrix< value_t >( ncols, ncols );
-    auto  P = std::vector< int >( ncols, 0 );
+    auto  P = std::vector< blas::int_t >( ncols, 0 );
 
     blas::qrp( M, R, P );
 
@@ -170,7 +170,7 @@ rrqr ( const blas::matrix< T > &  U,
         // compute column-pivoted QR of U·RV'
         auto  QU = blas::prod( value_t(1), U, adjoint(RV) );
         auto  RU = blas::matrix< value_t >( in_rank, in_rank );
-        auto  P  = std::vector< int >( in_rank, 0 );
+        auto  P  = std::vector< blas::int_t >( in_rank, 0 );
 
         blas::qrp( QU, RU, P );
 

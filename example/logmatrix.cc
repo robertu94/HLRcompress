@@ -22,6 +22,7 @@
 #include <hlrcompress/compress_cuda.hh>
 #include <hlrcompress/approx/svd.hh>
 #include <hlrcompress/approx/rrqr.hh>
+#include <hlrcompress/approx/randsvd.hh>
 #include <hlrcompress/hlr/error.hh>
 
 using namespace hlrcompress;
