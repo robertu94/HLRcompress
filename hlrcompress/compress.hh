@@ -279,7 +279,7 @@ compress ( const blas::matrix< value_t > &  D,
                                                  
                                                  for ( auto  i = r.begin(); i != r.end(); ++i )
                                                      sq += D.data()[i] * D.data()[i];
-                                                 
+
                                                  return sq;
                                              },
                                              std::plus< real_t >() );
@@ -312,6 +312,10 @@ compress ( const blas::matrix< value_t > &  D,
     const auto  delta  = norm_D * rel_prec / D.nrows();
     auto        acc_D  = adaptive_accuracy( delta );
     auto        M      = std::unique_ptr< block< value_t > >();
+
+    // std::cout << "|D|:   " << norm_D << std::endl;
+    // std::cout << "eps:   " << rel_prec << std::endl;
+    // std::cout << "delta: " << delta << std::endl;
 
     #if HLRCOMPRESS_USE_TBB == 1
     

@@ -61,7 +61,8 @@ and with a ZFP rate of 16 the full command line would be
 ./logmatrix 1024 1e-4 32 16
 ```
 
-With CUDA available, it will use the experimental CUDA based compression instead of 
+With CUDA available, it will use the experimental CUDA based compression instead of the
+CPU implementation.
 
 ### h5compress
 
