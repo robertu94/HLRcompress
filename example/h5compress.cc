@@ -31,32 +31,38 @@ int
 main ( int      argc,
        char **  argv )
 {
-    const auto  matrix = ( argc > 1 ? argv[1] : "matrix.h5" );
+    const auto  matrix = ( argc > 1 ? argv[1] : "data.h5" );
     auto        M      = read_matrix( matrix );
 
     const auto  acc    = ( argc > 2 ? atof( argv[2] ) : 1e-4 );
     const auto  ntile  = ( argc > 3 ? atoi( argv[3] ) : 32 );
     auto        apx    = SVD();
 
-    #if HLRCOMPRESS_USE_ZFP == 1
-    const auto  rate   = ( argc > 4 ? atoi( argv[4] ) : 0 );
-    auto        zconf  = ( rate > 0
-                           ? std::make_unique< zconfig_t >( zfp_config_rate( rate, false ) )
-                           : std::unique_ptr< zconfig_t >() );
-    #else
-    auto        zconf  = std::unique_ptr< zconfig_t >();
-    #endif
+    // #if HLRCOMPRESS_USE_ZFP == 1
+    
+    // const auto  rate   = ( argc > 4 ? atoi( argv[4] ) : 0 );
+    // auto        zconf  = ( rate > 0
+    //                        ? std::make_unique< zconfig_t >( zfp_config_rate( rate, false ) )
+    //                        : std::unique_ptr< zconfig_t >() );
+    // #else
+    
+    // auto        zconf  = std::unique_ptr< zconfig_t >();
+    
+    // #endif
     
     std::cout << "compressing " << std::endl
               << "  matrix:     " << matrix << " ( " << M.nrows() << " x " << M.ncols() << " )" << std::endl
               << "  accuracy:   " << std::setprecision(4) << std::scientific << acc << std::endl
               << "  tilesize:   " << ntile << std::endl;
-    #if HLRCOMPRESS_USE_ZFP == 1
-    std::cout << "  zfp rate:   " << rate << std::endl;
-    #endif
+
+    // #if HLRCOMPRESS_USE_ZFP == 1
+    
+    // std::cout << "  zfp rate:   " << rate << std::endl;
+    
+    // #endif
     
     auto        tic    = std::chrono::high_resolution_clock::now();
-    auto        zM     = compress< value_t, decltype(apx) >( M, acc, apx, ntile, zconf.get() );
+    auto        zM     = compress< value_t, decltype(apx) >( M, acc, apx, ntile );
     auto        toc    = std::chrono::duration_cast< std::chrono::microseconds >( std::chrono::high_resolution_clock::now() - tic );
 
     std::cout << "runtime:      " << std::defaultfloat << toc.count() / 1e6 << " s" << std::endl;
@@ -66,14 +72,20 @@ main ( int      argc,
 
     std::cout << "storage " << std::endl
               << "  original:   " << bs_M << std::endl
-              << "  compressed: " << bs_zM << " / " << ( 100.0 * double(bs_zM) / double(bs_M) ) << "%" << std::endl;
+              << "  compressed: " << bs_zM
+              << " / " << ( 100.0 * double(bs_zM) / double(bs_M) ) << "%" 
+              << " / " << double(bs_M) / double(bs_zM) << "x"
+              << std::endl;
 
     // needs to be uncompressed for error computation (for now)
     zM->uncompress();
 
     auto  norm_M = blas::norm_F( M );
-    
-    std::cout << "error:        " << std::setprecision(4) << std::scientific << error_fro( M, *zM ) / norm_M << std::endl;
+
+    if ( norm_M > 1e-32 )
+        std::cout << "error:        " << std::setprecision(4) << std::scientific << error_fro( M, *zM ) / norm_M << std::endl;
+    else
+        std::cout << "error:        " << std::setprecision(4) << std::scientific << error_fro( M, *zM ) << std::endl;
     
     return 0;
 }

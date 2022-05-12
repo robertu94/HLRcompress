@@ -259,8 +259,7 @@ std::unique_ptr< block< value_t > >
 compress ( const blas::matrix< value_t > &  D,
            const double                     rel_prec,
            const approx_t &                 approx,
-           const size_t                     ntile,
-           const zconfig_t *                zconf = nullptr )
+           const size_t                     ntile )
 {
     //
     // handle parallel computation of norm because BLAS should be sequential
@@ -313,24 +312,31 @@ compress ( const blas::matrix< value_t > &  D,
     auto        acc_D  = adaptive_accuracy( delta );
     auto        M      = std::unique_ptr< block< value_t > >();
 
+    #if HLRCOMPRESS_USE_ZFP == 1
+    auto        zconf  = std::make_unique< zconfig_t >( fixed_accuracy( delta ) );
+    // auto        zconf  = std::make_unique< zconfig_t >( fixed_rate( 30 ) );
+    #else
+    auto        zconf  = std::unique_ptr< zconfig_t >();
+    #endif
+    
     // std::cout << "|D|:   " << norm_D << std::endl;
     // std::cout << "eps:   " << rel_prec << std::endl;
     // std::cout << "delta: " << delta << std::endl;
 
     #if HLRCOMPRESS_USE_TBB == 1
     
-    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc_D, approx, ntile, zconf ) );
+    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc_D, approx, ntile, zconf.get() ) );
 
     #elif HLRCOMPRESS_USE_OPENMP == 1
 
     #pragma omp parallel
     #pragma omp single
     #pragma omp task
-    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc_D, approx, ntile, zconf ) );
+    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc_D, approx, ntile, zconf.get() ) );
 
     #else
     
-    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc_D, approx, ntile, zconf ) );
+    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc_D, approx, ntile, zconf.get() ) );
     
     #endif
 

@@ -109,19 +109,19 @@ main ( int      argc,
     const auto  ntile = ( argc > 3 ? atoi( argv[3] ) : 32 );
     auto        apx   = SVD();
 
-    #if HLRCOMPRESS_USE_ZFP == 1
-    const auto  rate  = ( argc > 4 ? atoi( argv[4] ) : 32 );
-    auto        zconf = std::make_unique< zconfig_t >( zfp_config_rate( rate, false ) );
-    #else
-    auto        zconf = std::unique_ptr< zconfig_t >();
-    #endif
+    // #if HLRCOMPRESS_USE_ZFP == 1
+    // const auto  rate  = ( argc > 4 ? atoi( argv[4] ) : 32 );
+    // auto        zconf = std::make_unique< zconfig_t >( zfp_config_rate( rate, false ) );
+    // #else
+    // auto        zconf = std::unique_ptr< zconfig_t >();
+    // #endif
 
     auto        tic   = std::chrono::high_resolution_clock::now();
 
     #if HLRCOMPRESS_USE_CUDA == 1
-    auto        zM    = compress_cuda( M, acc, apx, ntile, zconf.get() );
+    auto        zM    = compress_cuda( M, acc, apx, ntile );
     #else
-    auto        zM    = compress( M, acc, apx, ntile, zconf.get() );
+    auto        zM    = compress( M, acc, apx, ntile );
     #endif
     
     auto        toc   = std::chrono::duration_cast< std::chrono::microseconds >( std::chrono::high_resolution_clock::now() - tic );

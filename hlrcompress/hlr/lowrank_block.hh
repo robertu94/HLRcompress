@@ -30,7 +30,7 @@ public:
     
     #if HLRCOMPRESS_USE_ZFP == 1
     // compressed storage based on underlying floating point type
-    using compressed_storage = std::unique_ptr< zfp::const_array2< real_t > >;
+    using compressed_storage = zarray;
     #endif
 
 private:
@@ -158,45 +158,20 @@ public:
         if ( is_compressed() )
             return;
     
-        uint          factor    = sizeof(value_t) / sizeof(real_t);
-        const size_t  mem_dense = sizeof(value_t) * rank() * ( _U.nrows() + _V.ncols() );
+        using real_t = real_type_t< value_t >;
+
+        constexpr auto  factor    = sizeof(value_t) / sizeof(real_t);
+        const size_t    mem_dense = sizeof(value_t) * rank() * ( _U.nrows() + _V.ncols() );
+        auto            zU        = zcompress< real_t >( config, (real_t *) _U.data(), _U.nrows() * factor, _U.ncols() );
+        auto            zV        = zcompress< real_t >( config, (real_t *) _V.data(), _V.nrows() * factor, _V.ncols() );
             
-        if constexpr( std::is_same_v< value_t, real_t > )
+        if ( zU.size() + zV.size() < mem_dense )
         {
-            auto  zU = std::make_unique< zfp::const_array2< value_t > >( _U.nrows(), _U.ncols(), config );
-            auto  zV = std::make_unique< zfp::const_array2< value_t > >( _V.nrows(), _V.ncols(), config );
-                
-            zU->set( _U.data() );
-            zV->set( _V.data() );
-
-            const size_t  mem_zfp = zU->compressed_size() + zV->compressed_size();
-
-            if ( mem_zfp < mem_dense )
-            {
-                _zU = std::move( zU );
-                _zV = std::move( zV );
-                _U  = std::move( blas::matrix< value_t >( 0, rank() ) );
-                _V  = std::move( blas::matrix< value_t >( 0, rank() ) );
-            }// if
+            _zU = std::move( zU );
+            _zV = std::move( zV );
+            _U  = std::move( blas::matrix< value_t >( 0, rank() ) );
+            _V  = std::move( blas::matrix< value_t >( 0, rank() ) );
         }// if
-        else
-        {
-            auto  zU = std::make_unique< zfp::const_array2< real_t > >( factor * _U.nrows(), _U.ncols(), config );
-            auto  zV = std::make_unique< zfp::const_array2< real_t > >( factor * _V.nrows(), _V.ncols(), config );
-                
-            zU->set( (real_t *) _U.data() );
-            zV->set( (real_t *) _V.data() );
-
-            const size_t  mem_zfp = zU->compressed_size() + zV->compressed_size();
-
-            if ( mem_zfp < mem_dense )
-            {
-                _zU = std::move( zU );
-                _zV = std::move( zV );
-                _U  = std::move( blas::matrix< value_t >( 0, rank() ) );
-                _V  = std::move( blas::matrix< value_t >( 0, rank() ) );
-            }// if
-        }// else
 
         #endif
     }
@@ -209,11 +184,14 @@ public:
         if ( ! is_compressed() )
             return;
 
-        auto  uU = blas::matrix< value_t >( this->nrows(), rank() );
-        auto  uV = blas::matrix< value_t >( this->ncols(), rank() );
+        using real_t = real_type_t< value_t >;
+        
+        constexpr auto  factor = sizeof(value_t) / sizeof(real_t);
+        auto            uU     = blas::matrix< value_t >( this->nrows(), rank() );
+        auto            uV     = blas::matrix< value_t >( this->ncols(), rank() );
     
-        _zU->get( (real_t*) uU.data() );
-        _zV->get( (real_t*) uV.data() );
+        zuncompress< real_t >( _zU, (real_t *) uU.data(), uU.nrows() * factor, uU.ncols() );
+        zuncompress< real_t >( _zV, (real_t *) uV.data(), uV.nrows() * factor, uV.ncols() );
         remove_compressed();
         
         _U = std::move( uU );
@@ -226,7 +204,7 @@ public:
     virtual bool   is_compressed () const
     {
         #if HLRCOMPRESS_USE_ZFP == 1
-        return _zU.get() != nullptr;
+        return _zU.data() != nullptr;
         #else
         return false;
         #endif
@@ -253,11 +231,11 @@ public:
 
         bs += sizeof(_zU) + sizeof(_zV);
 
-        if ( _zU.get() != nullptr )
-            bs += _zU->size();
-        
-        if ( _zV.get() != nullptr )
-            bs += _zV->size();
+        if ( is_compressed() )
+        {
+            bs += _zU.size();
+            bs += _zV.size();
+        }// if
         
         #endif
 
@@ -269,8 +247,8 @@ protected:
     virtual void   remove_compressed ()
     {
         #if HLRCOMPRESS_USE_ZFP == 1
-        _zU.reset( nullptr );
-        _zV.reset( nullptr );
+        _zU = std::move( zarray() );
+        _zV = std::move( zarray() );
         #endif
     }
 };
