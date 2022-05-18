@@ -132,14 +132,49 @@ public:
         
         constexpr auto  factor    = sizeof(value_t) / sizeof(real_t);
         const size_t    mem_dense = sizeof(value_t) * _M.nrows() * _M.ncols();
-        auto            zM        = zcompress< real_t >( config, (real_t *) _M.data(), _M.nrows() * factor, _M.ncols() );
 
-        if ( zM.size() < mem_dense )
+        if ( config.mode != compress_adaptive )
         {
-            _zM = std::move( zM );
-            _M  = std::move( blas::matrix< value_t >( 0, 0 ) );
-        }// if
+            auto  zM = zcompress< real_t >( config, (real_t *) _M.data(), _M.nrows() * factor, _M.ncols() );
 
+            if ( zM.size() < mem_dense )
+            {
+                _zM = std::move( zM );
+                _M  = std::move( blas::matrix< value_t >( 0, 0 ) );
+            }// if
+        }// if
+        else
+        {
+            double  tol = config.accuracy; // * std::sqrt( double(_M.nrows()) * double(_M.ncols()) );
+            auto    T   = blas::matrix< value_t >( this->nrows(), this->ncols() );
+        
+            // for ( uint  rate = 8; rate <= 64; rate += 2 )
+            // {
+            //     auto loc_cfg = fixed_rate( rate );
+            for ( double  acc = tol * 1e1; acc >= tol * 1e-3; acc *= 0.5 )
+            {
+                auto loc_cfg = fixed_accuracy( acc );
+                auto zM      = zcompress< real_t >( loc_cfg, (real_t *) _M.data(), _M.nrows() * factor, _M.ncols() );
+                
+                zuncompress< real_t >( zM, (real_t *) T.data(), T.nrows() * factor, T.ncols() );
+                
+                blas::add( value_t(-1), _M, T );
+                
+                const auto  error = blas::norm_F( T );
+                
+                if ( error <= tol )
+                {
+                    if ( zM.size() < mem_dense )
+                    {
+                        _zM = std::move( zM );
+                        _M  = std::move( blas::matrix< value_t >( 0, 0 ) );
+                    }// if
+                    
+                    return;
+                }// if
+            }// while
+        }// else
+        
         #endif
     }
 

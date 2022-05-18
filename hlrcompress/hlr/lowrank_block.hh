@@ -153,6 +153,9 @@ public:
     // - may result in non-compression if storage does not decrease
     virtual void   compress      ( const zconfig_t &  config )
     {
+        if ( rank() == 0 )
+            return;
+        
         #if HLRCOMPRESS_USE_ZFP == 1
     
         if ( is_compressed() )
@@ -160,18 +163,81 @@ public:
     
         using real_t = real_type_t< value_t >;
 
+        // compute | [U1;U2] · [V1;V2]' |_F
+        auto  lrnorm_F = [] ( const blas::matrix< value_t > &  U1,
+                              const blas::matrix< value_t > &  V1,
+                              const blas::matrix< value_t > &  U2,
+                              const blas::matrix< value_t > &  V2 )
+        {
+            value_t  sum = 0;
+    
+            for ( size_t  l1 = 0; l1 < U1.ncols(); l1++ )
+            {
+                auto  U1_l1 = U1.column( l1 );
+                auto  V1_l1 = V1.column( l1 );
+                
+                for ( size_t  l2 = 0; l2 < U2.ncols(); l2++ )
+                {
+                    auto  U2_l2 = U2.column( l2 );
+                    auto  V2_l2 = V2.column( l2 );
+
+                    sum += blas::dot( U1_l1, U2_l2 ) * blas::dot( V1_l1, V2_l2 );
+                }// for
+            }// for
+
+            return std::real( sum );
+        };
+            
         constexpr auto  factor    = sizeof(value_t) / sizeof(real_t);
         const size_t    mem_dense = sizeof(value_t) * rank() * ( _U.nrows() + _V.ncols() );
-        auto            zU        = zcompress< real_t >( config, (real_t *) _U.data(), _U.nrows() * factor, _U.ncols() );
-        auto            zV        = zcompress< real_t >( config, (real_t *) _V.data(), _V.nrows() * factor, _V.ncols() );
-            
-        if ( zU.size() + zV.size() < mem_dense )
+
+        if ( config.mode != compress_adaptive )
         {
-            _zU = std::move( zU );
-            _zV = std::move( zV );
-            _U  = std::move( blas::matrix< value_t >( 0, rank() ) );
-            _V  = std::move( blas::matrix< value_t >( 0, rank() ) );
+            auto  zU = zcompress< real_t >( config, (real_t *) _U.data(), _U.nrows() * factor, _U.ncols() );
+            auto  zV = zcompress< real_t >( config, (real_t *) _V.data(), _V.nrows() * factor, _V.ncols() );
+            
+            if ( zU.size() + zV.size() < mem_dense )
+            {
+                _zU = std::move( zU );
+                _zV = std::move( zV );
+                _U  = std::move( blas::matrix< value_t >( 0, rank() ) );
+                _V  = std::move( blas::matrix< value_t >( 0, rank() ) );
+            }// if
         }// if
+        else
+        {
+            double  tol = config.accuracy; // * std::sqrt( double(_U.nrows()) * double(_V.nrows()) );
+            auto    TU  = blas::matrix< value_t >( _U.nrows(), _U.ncols() );
+            auto    TV  = blas::matrix< value_t >( _V.nrows(), _V.ncols() );
+        
+            // for ( uint  rate = 8; rate <= 64; rate += 2 )
+            // {
+            //     auto loc_cfg = fixed_rate( rate );
+            for ( double  acc = tol * 1e1; acc >= tol * 1e-3; acc *= 0.5 )
+            {
+                auto loc_cfg = fixed_accuracy( acc );
+                auto zU      = zcompress< real_t >( loc_cfg, (real_t *) _U.data(), _U.nrows() * factor, _U.ncols() );
+                auto zV      = zcompress< real_t >( loc_cfg, (real_t *) _V.data(), _V.nrows() * factor, _V.ncols() );
+            
+                zuncompress< real_t >( zU, (real_t *) TU.data(), TU.nrows() * factor, TU.ncols() );
+                zuncompress< real_t >( zV, (real_t *) TV.data(), TV.nrows() * factor, TV.ncols() );
+
+                const auto  error = std::sqrt( std::abs( lrnorm_F( _U, _U, _V, _V ) - lrnorm_F( _U, TU, _V, TV ) - lrnorm_F( TU, _U, TV, _V ) + lrnorm_F( TU, TU, TV, TV ) ) );
+            
+                if ( error <= tol )
+                {
+                    if ( zU.size() + zV.size() < mem_dense )
+                    {
+                        _zU = std::move( zU );
+                        _zV = std::move( zV );
+                        _U  = std::move( blas::matrix< value_t >( 0, rank() ) );
+                        _V  = std::move( blas::matrix< value_t >( 0, rank() ) );
+                    }// if
+
+                    return;
+                }// if
+            }// for
+        }// else
 
         #endif
     }

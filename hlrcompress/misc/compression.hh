@@ -27,19 +27,29 @@ namespace hlrcompress
 using  zarray = std::vector< unsigned char >;
 
 //
+// compression types
+//
+enum compression_mode {
+    compress_reversible,
+    compress_fixed_rate,
+    compress_fixed_accuracy,
+    compress_adaptive
+};
+
+//
 // define compression mode
 //
 struct zconfig_t
 {
-    zfp_mode  mode;
-    double    accuracy;
-    uint      precision;
-    uint      rate;
+    compression_mode  mode;
+    double            accuracy;
+    uint              rate;
 };
 
-inline zconfig_t reversible     ()                     { return zconfig_t{ zfp_mode_reversible, 0.0, 0, 0 }; }
-inline zconfig_t fixed_rate     ( const uint    rate ) { return zconfig_t{ zfp_mode_fixed_rate, 0.0, 0, rate }; }
-inline zconfig_t fixed_accuracy ( const double  acc  ) { return zconfig_t{ zfp_mode_fixed_accuracy, acc, 0, 0 }; }
+inline zconfig_t  reversible     ()                     { return zconfig_t{ compress_reversible,     0.0, 0    }; }
+inline zconfig_t  fixed_rate     ( const uint    rate ) { return zconfig_t{ compress_fixed_rate,     0.0, rate }; }
+inline zconfig_t  fixed_accuracy ( const double  acc  ) { return zconfig_t{ compress_fixed_accuracy, acc, 0    }; }
+inline zconfig_t  adaptive       ( const double  acc  ) { return zconfig_t{ compress_adaptive,       acc, 0    }; }
 
 // holds compressed data
 using  zarray = std::vector< unsigned char >;
@@ -79,10 +89,10 @@ zcompress ( const zconfig_t &  config,
 
     switch ( config.mode )
     {
-        case zfp_mode_fixed_rate      : zfp_stream_set_rate( zfp, config.rate, type, ndims, zfp_false ); break;
-        case zfp_mode_fixed_precision : zfp_stream_set_precision( zfp, config.precision ); break;
-        case zfp_mode_fixed_accuracy  : zfp_stream_set_accuracy( zfp, config.accuracy ); break;
-        case zfp_mode_reversible      : zfp_stream_set_reversible( zfp ); break;
+        case compress_fixed_rate      : zfp_stream_set_rate( zfp, config.rate, type, ndims, zfp_false ); break;
+        // case compress_fixed_precision : zfp_stream_set_precision( zfp, config.precision ); break;
+        case compress_fixed_accuracy  : zfp_stream_set_accuracy( zfp, config.accuracy ); break;
+        case compress_reversible      : zfp_stream_set_reversible( zfp ); break;
             
         default :
             HLRCOMPRESS_ASSERT( "unsupported ZFP mode" );

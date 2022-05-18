@@ -313,8 +313,10 @@ compress ( const blas::matrix< value_t > &  D,
     auto        M      = std::unique_ptr< block< value_t > >();
 
     #if HLRCOMPRESS_USE_ZFP == 1
-    auto        zconf  = std::make_unique< zconfig_t >( fixed_accuracy( delta ) );
-    // auto        zconf  = std::make_unique< zconfig_t >( fixed_rate( 30 ) );
+    // auto        zconf  = std::unique_ptr< zconfig_t >();
+    auto        zconf  = std::make_unique< zconfig_t >( adaptive( delta ) );
+    // auto        zconf  = std::make_unique< zconfig_t >( fixed_accuracy( delta ) );
+    // auto        zconf  = std::make_unique< zconfig_t >( fixed_rate( 16 ) );
     #else
     auto        zconf  = std::unique_ptr< zconfig_t >();
     #endif
