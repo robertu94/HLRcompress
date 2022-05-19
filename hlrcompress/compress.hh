@@ -322,9 +322,9 @@ compress ( const blas::matrix< value_t > &  D,
             lzconf = std::make_unique< zconfig_t >( fixed_rate( zconf->rate ) );
     }// if
     
-    std::cout << "|D|:   " << norm_D << std::endl;
-    std::cout << "eps:   " << rel_prec << std::endl;
-    std::cout << "delta: " << delta << std::endl;
+    // std::cout << "|D|:   " << norm_D << std::endl;
+    // std::cout << "eps:   " << rel_prec << std::endl;
+    // std::cout << "delta: " << delta << std::endl;
 
     #if HLRCOMPRESS_USE_TBB == 1
     
