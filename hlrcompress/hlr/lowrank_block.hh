@@ -206,9 +206,9 @@ public:
         }// if
         else
         {
-            double  tol = config.accuracy; // * std::sqrt( double(_U.nrows()) * double(_V.nrows()) );
-            auto    TU  = blas::matrix< value_t >( _U.nrows(), _U.ncols() );
-            auto    TV  = blas::matrix< value_t >( _V.nrows(), _V.ncols() );
+            const double  tol = config.accuracy; // * std::sqrt( double(_U.nrows()) * double(_V.nrows()) );
+            auto          TU  = blas::matrix< value_t >( _U.nrows(), _U.ncols() );
+            auto          TV  = blas::matrix< value_t >( _V.nrows(), _V.ncols() );
         
             // for ( uint  rate = 8; rate <= 64; rate += 2 )
             // {

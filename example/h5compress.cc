@@ -11,6 +11,7 @@
 #include <string>
 #include <chrono>
 #include <iomanip>
+#include <unistd.h>
 
 #include <hdf5.h>
 
@@ -25,50 +26,97 @@ using namespace hlrcompress;
 using value_t = double;
 
 const blas::matrix< value_t >
-read_matrix ( const char *  filename );
+read_matrix ( const std::string &  filename );
 
 int
 main ( int      argc,
        char **  argv )
 {
-    const auto  matrix = ( argc > 1 ? argv[1] : "data.h5" );
-    auto        M      = read_matrix( matrix );
+    auto  matrix = std::string( "data.h5" );
+    auto  acc    = double(1e-4);
+    auto  ntile  = size_t(32);
+    auto  zconf  = std::unique_ptr< zconfig_t >();
+    auto  apx    = std::string( "svd" );
+    char  opt;
 
-    const auto  acc    = ( argc > 2 ? atof( argv[2] ) : 1e-4 );
-    const auto  ntile  = ( argc > 3 ? atoi( argv[3] ) : 32 );
-    auto        apx    = SVD();
+    while (( opt = getopt( argc, argv, "i:e:t:a:p:r:l:h" )) != -1 )
+    {
+        switch (opt)
+        {
+            case 'i':
+                matrix = optarg;
+                break;
+                
+            case 'e':
+                acc = atof( optarg );
+                break;
+                
+            case 't':
+                ntile = atoi( optarg );
+                break;
+                
+            case 'l':
+                apx = optarg;
+                break;
+                
+            case 'a':
+                zconf = std::make_unique< zconfig_t >( adaptive( atof( optarg ) ) );
+                break;
+                
+            case 'p':
+                zconf = std::make_unique< zconfig_t >( fixed_accuracy( atof( optarg ) ) );
+                break;
+                
+            case 'r':
+                zconf = std::make_unique< zconfig_t >( fixed_rate( atoi( optarg ) ) );
+                break;
 
-    // #if HLRCOMPRESS_USE_ZFP == 1
+            case 'h' :
+                std::cout << "h5compress -i data.h5 [options]" << std::endl
+                          << std::endl
+                          << "  -e eps  : relative accuracy of HLRcompress" << std::endl
+                          << "  -t size : tile size of block layout" << std::endl
+                          << "  -l apx  : low-rank approximation scheme (svd,rrqr,randsvd)" << std::endl
+                          << "  -a fac  : adaptive ZFP compression" << std::endl
+                          << "  -p fac  : fixed accuracy ZFP compression" << std::endl
+                          << "  -r rate : fixed rate ZFP compression" << std::endl
+                          << "  -h      : show this help" << std::endl;
+                exit( 0 );
+                
+            default:
+                std::cout << "unknown option, try -h" << std::endl;
+                exit( 1 );
+        }// switch
+    }// while
     
-    // const auto  rate   = ( argc > 4 ? atoi( argv[4] ) : 0 );
-    // auto        zconf  = ( rate > 0
-    //                        ? std::make_unique< zconfig_t >( zfp_config_rate( rate, false ) )
-    //                        : std::unique_ptr< zconfig_t >() );
-    // #else
-    
-    // auto        zconf  = std::unique_ptr< zconfig_t >();
-    
-    // #endif
+    auto  M = read_matrix( matrix );
     
     std::cout << "compressing " << std::endl
               << "  matrix:     " << matrix << " ( " << M.nrows() << " x " << M.ncols() << " )" << std::endl
+              << "  lowrank:    " << apx << std::endl
               << "  accuracy:   " << std::setprecision(4) << std::scientific << acc << std::endl
               << "  tilesize:   " << ntile << std::endl;
 
-    // #if HLRCOMPRESS_USE_ZFP == 1
+    if ( zconf.get() != nullptr )
+        std::cout << "  zfp:        " << *zconf << std::endl;
+    else
+        std::cout << "  zfp:        none" << std::endl;
+
+    auto  zM  = std::unique_ptr< block< value_t > >();
+    auto  tic = std::chrono::high_resolution_clock::now();
+
+    if      ( apx == "svd"     ) zM = compress< value_t >( M, acc, SVD(), ntile, *zconf );
+    else if ( apx == "rrqr"    ) zM = compress< value_t >( M, acc, RRQR(), ntile, *zconf );
+    else if ( apx == "randsvd" ) zM = compress< value_t >( M, acc, RandSVD(), ntile, *zconf );
+    else
+        std::cout << "unknown low-rank approximation type : " << apx << std::endl;
     
-    // std::cout << "  zfp rate:   " << rate << std::endl;
-    
-    // #endif
-    
-    auto        tic    = std::chrono::high_resolution_clock::now();
-    auto        zM     = compress< value_t, decltype(apx) >( M, acc, apx, ntile );
-    auto        toc    = std::chrono::duration_cast< std::chrono::microseconds >( std::chrono::high_resolution_clock::now() - tic );
+    auto  toc = std::chrono::duration_cast< std::chrono::microseconds >( std::chrono::high_resolution_clock::now() - tic );
 
     std::cout << "runtime:      " << std::defaultfloat << toc.count() / 1e6 << " s" << std::endl;
 
-    const auto  bs_M   = M.byte_size();
-    const auto  bs_zM  = zM->byte_size();
+    const auto  bs_M  = M.byte_size();
+    const auto  bs_zM = zM->byte_size();
 
     std::cout << "storage " << std::endl
               << "  original:   " << bs_M << std::endl
@@ -131,9 +179,9 @@ visit_func ( hid_t               /* loc_id */,
 }
 
 const blas::matrix< value_t >
-read_matrix ( const char *  filename )
+read_matrix ( const std::string &  filename )
 {
-    auto  file      = H5Fopen( filename, H5F_ACC_RDONLY, H5P_DEFAULT );
+    auto  file      = H5Fopen( filename.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT );
     auto  data_name = std::string( "" );
     auto  status    = H5Ovisit( file, H5_INDEX_NAME, H5_ITER_INC, visit_func, & data_name );
 

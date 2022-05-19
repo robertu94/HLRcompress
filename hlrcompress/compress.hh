@@ -251,15 +251,14 @@ compress ( const indexset &                 rowis,
     }// else
 }
 
-}// namespace detail
-
 template < typename value_t,
            typename approx_t >
 std::unique_ptr< block< value_t > >
 compress ( const blas::matrix< value_t > &  D,
            const double                     rel_prec,
            const approx_t &                 approx,
-           const size_t                     ntile )
+           const size_t                     ntile,
+           const zconfig_t *                zconf )
 {
     //
     // handle parallel computation of norm because BLAS should be sequential
@@ -311,46 +310,73 @@ compress ( const blas::matrix< value_t > &  D,
     const auto  delta  = norm_D * rel_prec / D.nrows();
     auto        acc_D  = adaptive_accuracy( delta );
     auto        M      = std::unique_ptr< block< value_t > >();
-
-    #if HLRCOMPRESS_USE_ZFP == 1
-    // auto        zconf  = std::unique_ptr< zconfig_t >();
-    auto        zconf  = std::make_unique< zconfig_t >( adaptive( delta ) );
-    // auto        zconf  = std::make_unique< zconfig_t >( fixed_accuracy( delta ) );
-    // auto        zconf  = std::make_unique< zconfig_t >( fixed_rate( 16 ) );
-    #else
-    auto        zconf  = std::unique_ptr< zconfig_t >();
-    #endif
+    auto        lzconf = std::unique_ptr< zconfig_t >();
     
-    // std::cout << "|D|:   " << norm_D << std::endl;
-    // std::cout << "eps:   " << rel_prec << std::endl;
-    // std::cout << "delta: " << delta << std::endl;
+    if ( zconf != nullptr )
+    {
+        if ( zconf->mode == compress_adaptive )
+            lzconf = std::make_unique< zconfig_t >( adaptive( zconf->accuracy * delta ) );
+        else if ( zconf->mode == compress_fixed_accuracy )
+            lzconf = std::make_unique< zconfig_t >( fixed_accuracy( zconf->accuracy * delta ) );
+        else if ( zconf->mode == compress_fixed_rate )
+            lzconf = std::make_unique< zconfig_t >( fixed_rate( zconf->rate ) );
+    }// if
+    
+    std::cout << "|D|:   " << norm_D << std::endl;
+    std::cout << "eps:   " << rel_prec << std::endl;
+    std::cout << "delta: " << delta << std::endl;
 
     #if HLRCOMPRESS_USE_TBB == 1
     
-    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc_D, approx, ntile, zconf.get() ) );
+    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc_D, approx, ntile, lzconf.get() ) );
 
     #elif HLRCOMPRESS_USE_OPENMP == 1
 
     #pragma omp parallel
     #pragma omp single
     #pragma omp task
-    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc_D, approx, ntile, zconf.get() ) );
+    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc_D, approx, ntile, lzconf.get() ) );
 
     #else
     
-    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc_D, approx, ntile, zconf.get() ) );
+    M = std::move( detail::compress( indexset( 0, D.nrows()-1 ), indexset( 0, D.ncols()-1 ), D, acc_D, approx, ntile, lzconf.get() ) );
     
     #endif
 
     HLRCOMPRESS_ASSERT( M.get() != nullptr );
 
     // handle ZFP compression for global lowrank/dense case
-    if (( zconf != nullptr ) && ! M->is_structured() )
-        M->compress( *zconf );
+    if (( lzconf.get() != nullptr ) && ! M->is_structured() )
+        M->compress( *lzconf );
 
     return M;
 }
 
+}// namespace detail
+
+template < typename value_t,
+           typename approx_t >
+std::unique_ptr< block< value_t > >
+compress ( const blas::matrix< value_t > &  D,
+           const double                     rel_prec,
+           const approx_t &                 approx,
+           const size_t                     ntile,
+           const zconfig_t &                zconf )
+{
+    return detail::compress( D, rel_prec, approx, ntile, &zconf );
+}
+    
+template < typename value_t,
+           typename approx_t >
+std::unique_ptr< block< value_t > >
+compress ( const blas::matrix< value_t > &  D,
+           const double                     rel_prec,
+           const approx_t &                 approx,
+           const size_t                     ntile )
+{
+    return detail::compress( D, rel_prec, approx, ntile, nullptr );
+}
+    
 }// namespace hlrcompress
 
 #endif // __HLRCOMPRESS_COMPRESS_HH

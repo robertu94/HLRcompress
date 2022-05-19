@@ -145,9 +145,9 @@ public:
         }// if
         else
         {
-            double  tol = config.accuracy; // * std::sqrt( double(_M.nrows()) * double(_M.ncols()) );
-            auto    T   = blas::matrix< value_t >( this->nrows(), this->ncols() );
-        
+            const double  tol = config.accuracy; // * std::sqrt( double(_M.nrows()) * double(_M.ncols()) );
+            auto          T   = blas::matrix< value_t >( this->nrows(), this->ncols() );
+                                   
             // for ( uint  rate = 8; rate <= 64; rate += 2 )
             // {
             //     auto loc_cfg = fixed_rate( rate );

@@ -51,6 +51,23 @@ inline zconfig_t  fixed_rate     ( const uint    rate ) { return zconfig_t{ comp
 inline zconfig_t  fixed_accuracy ( const double  acc  ) { return zconfig_t{ compress_fixed_accuracy, acc, 0    }; }
 inline zconfig_t  adaptive       ( const double  acc  ) { return zconfig_t{ compress_adaptive,       acc, 0    }; }
 
+//
+// stream output
+//
+std::ostream &
+operator << ( std::ostream &  os, const zconfig_t &  zconf )
+{
+    switch ( zconf.mode )
+    {
+        case compress_reversible :     os << "reversible"; break;
+        case compress_fixed_rate :     os << "fixed rate " << zconf.rate; break;
+        case compress_fixed_accuracy : os << "fixed accuracy " << zconf.accuracy; break;
+        case compress_adaptive :       os << "adaptive accuracy " << zconf.accuracy; break;
+    }// switch
+
+    return os;
+}
+
 // holds compressed data
 using  zarray = std::vector< unsigned char >;
 
@@ -194,7 +211,15 @@ zuncompress ( const zarray &  buffer,
 
 #else
 
+//
+// dummy type and function
+//
 struct zconfig_t {};
+
+inline zconfig_t  reversible     ()               { return zconfig_t{}; }
+inline zconfig_t  fixed_rate     ( const uint   ) { return zconfig_t{}; }
+inline zconfig_t  fixed_accuracy ( const double ) { return zconfig_t{}; }
+inline zconfig_t  adaptive       ( const double ) { return zconfig_t{}; }
 
 #endif
 
