@@ -23,7 +23,8 @@
 
 using namespace hlrcompress;
 
-using value_t = double;
+using  value_t  = double;
+using  my_clock = std::chrono::system_clock;
 
 const blas::matrix< value_t >
 read_matrix ( const std::string &  filename );
@@ -37,9 +38,10 @@ main ( int      argc,
     auto  ntile  = size_t(32);
     auto  zconf  = std::unique_ptr< zconfig_t >();
     auto  apx    = std::string( "svd" );
+    uint  nbench = 1;
     char  opt;
 
-    while (( opt = getopt( argc, argv, "i:e:t:a:p:r:l:h" )) != -1 )
+    while (( opt = getopt( argc, argv, "i:e:t:a:p:r:l:hb:" )) != -1 )
     {
         switch (opt)
         {
@@ -80,9 +82,14 @@ main ( int      argc,
                           << "  -a fac  : adaptive ZFP compression" << std::endl
                           << "  -p fac  : fixed accuracy ZFP compression" << std::endl
                           << "  -r rate : fixed rate ZFP compression" << std::endl
+                          << "  -b <n>  : run compress <n> times" << std::endl
                           << "  -h      : show this help" << std::endl;
                 exit( 0 );
                 
+            case 'b' :
+                nbench = atoi( optarg );
+                break;
+ 
             default:
                 std::cout << "unknown option, try -h" << std::endl;
                 exit( 1 );
@@ -102,18 +109,31 @@ main ( int      argc,
     else
         std::cout << "  zfp:        none" << std::endl;
 
-    auto  zM  = std::unique_ptr< block< value_t > >();
-    auto  tic = std::chrono::high_resolution_clock::now();
+    auto    zM    = std::unique_ptr< block< value_t > >();
+    double  t_min = -1;
 
-    if      ( apx == "svd"     ) zM = compress< value_t >( M, acc, SVD(), ntile, *zconf );
-    else if ( apx == "rrqr"    ) zM = compress< value_t >( M, acc, RRQR(), ntile, *zconf );
-    else if ( apx == "randsvd" ) zM = compress< value_t >( M, acc, RandSVD(), ntile, *zconf );
-    else
-        std::cout << "unknown low-rank approximation type : " << apx << std::endl;
+    for ( uint  i = 0; i < nbench; ++i )
+    {
+        auto  tic = my_clock::now();
+
+        if      ( apx == "svd"     ) zM = compress< value_t >( M, acc, SVD(), ntile, *zconf );
+        else if ( apx == "rrqr"    ) zM = compress< value_t >( M, acc, RRQR(), ntile, *zconf );
+        else if ( apx == "randsvd" ) zM = compress< value_t >( M, acc, RandSVD(), ntile, *zconf );
+        else
+            std::cout << "unknown low-rank approximation type : " << apx << std::endl;
+        
+        auto  toc = std::chrono::duration_cast< std::chrono::microseconds >( my_clock::now() - tic ).count() / 1e6;
+
+        std::cout << "  runtime:    " << std::defaultfloat << toc << " s" << std::endl;
+        
+        if ( t_min < 0 ) t_min = toc;
+        else             t_min = std::min( t_min, toc );
+
+        if ( i != nbench - 1 )
+            zM.reset( nullptr );
+    }// for
     
-    auto  toc = std::chrono::duration_cast< std::chrono::microseconds >( std::chrono::high_resolution_clock::now() - tic );
-
-    std::cout << "runtime:      " << std::defaultfloat << toc.count() / 1e6 << " s" << std::endl;
+    std::cout << "mintime:      " << std::defaultfloat << t_min << " s" << std::endl;
 
     const auto  bs_M  = M.byte_size();
     const auto  bs_zM = zM->byte_size();

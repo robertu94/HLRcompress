@@ -10,6 +10,7 @@
 #include <cmath>
 #include <chrono>
 #include <iomanip>
+#include <unistd.h>
 
 #include <hlrcompress/config.h>
 
@@ -27,7 +28,9 @@
 
 using namespace hlrcompress;
 
-template < typename value_t >
+using  value_t  = double;
+using  my_clock = std::chrono::system_clock;
+
 blas::matrix< value_t >
 gen_matrix_log ( const size_t  n )
 {
@@ -103,30 +106,99 @@ int
 main ( int      argc,
        char **  argv )
 {
-    const auto  n     = ( argc > 1 ? atoi( argv[1] ) : 128 );
-    auto        M     = gen_matrix_log< double >( n );
-    const auto  acc   = ( argc > 2 ? atof( argv[2] ) : 1e-4 );
-    const auto  ntile = ( argc > 3 ? atoi( argv[3] ) : 32 );
-    auto        apx   = SVD();
+    size_t  n      = 128;
+    auto    acc    = double(1e-4);
+    auto    ntile  = size_t(32);
+    auto    zconf  = std::unique_ptr< zconfig_t >();
+    auto    apx    = std::string( "svd" );
+    uint    nbench = 1;
+    char    opt;
 
-    // #if HLRCOMPRESS_USE_ZFP == 1
-    // const auto  rate  = ( argc > 4 ? atoi( argv[4] ) : 32 );
-    // auto        zconf = std::make_unique< zconfig_t >( zfp_config_rate( rate, false ) );
-    // #else
-    // auto        zconf = std::unique_ptr< zconfig_t >();
-    // #endif
+    while (( opt = getopt( argc, argv, "n:e:t:a:p:r:l:hb:" )) != -1 )
+    {
+        switch (opt)
+        {
+            case 'n':
+                n = atoi( optarg );
+                break;
+                
+            case 'e':
+                acc = atof( optarg );
+                break;
+                
+            case 't':
+                ntile = atoi( optarg );
+                break;
+                
+            case 'l':
+                apx = optarg;
+                break;
+                
+            case 'a':
+                zconf = std::make_unique< zconfig_t >( adaptive( atof( optarg ) ) );
+                break;
+                
+            case 'p':
+                zconf = std::make_unique< zconfig_t >( fixed_accuracy( atof( optarg ) ) );
+                break;
+                
+            case 'r':
+                zconf = std::make_unique< zconfig_t >( fixed_rate( atoi( optarg ) ) );
+                break;
 
-    auto        tic   = std::chrono::high_resolution_clock::now();
+            case 'h' :
+                std::cout << "logmatrix [options]" << std::endl
+                          << std::endl
+                          << "  -n dim  : dimension of matrix" << std::endl
+                          << "  -e eps  : relative accuracy of HLRcompress" << std::endl
+                          << "  -t size : tile size of block layout" << std::endl
+                          << "  -l apx  : low-rank approximation scheme (svd,rrqr,randsvd)" << std::endl
+                          << "  -a fac  : adaptive ZFP compression" << std::endl
+                          << "  -p fac  : fixed accuracy ZFP compression" << std::endl
+                          << "  -r rate : fixed rate ZFP compression" << std::endl
+                          << "  -b <n>  : run compress <n> times" << std::endl
+                          << "  -h      : show this help" << std::endl;
+                exit( 0 );
+                
+            case 'b' :
+                nbench = atoi( optarg );
+                break;
+ 
+            default:
+                std::cout << "unknown option, try -h" << std::endl;
+                exit( 1 );
+        }// switch
+    }// while
 
-    #if HLRCOMPRESS_USE_CUDA == 1
-    auto        zM    = compress_cuda( M, acc, apx, ntile );
-    #else
-    auto        zM    = compress( M, acc, apx, ntile );
-    #endif
+    auto  M = gen_matrix_log( n );
     
-    auto        toc   = std::chrono::duration_cast< std::chrono::microseconds >( std::chrono::high_resolution_clock::now() - tic );
+    auto    zM    = std::unique_ptr< block< value_t > >();
+    double  t_min = -1;
 
-    std::cout << "runtime:      " << toc.count() / 1e6 << " s" << std::endl;
+    for ( uint  i = 0; i < nbench; ++i )
+    {
+        auto  tic = my_clock::now();
+
+        #if HLRCOMPRESS_USE_CUDA == 1
+        zM    = compress_cuda( M, acc, apx, ntile );
+        #else
+        if      ( apx == "svd"     ) zM = compress< value_t >( M, acc, SVD(), ntile, *zconf );
+        else if ( apx == "rrqr"    ) zM = compress< value_t >( M, acc, RRQR(), ntile, *zconf );
+        else if ( apx == "randsvd" ) zM = compress< value_t >( M, acc, RandSVD(), ntile, *zconf );
+        else
+            std::cout << "unknown low-rank approximation type : " << apx << std::endl;
+        #endif
+    
+        auto  toc = std::chrono::duration_cast< std::chrono::microseconds >( my_clock::now() - tic ).count() / 1e6;
+
+        std::cout << "  runtime:    " << std::defaultfloat << toc << " s" << std::endl;
+        
+        if ( t_min < 0 ) t_min = toc;
+        else             t_min = std::min( t_min, toc );
+
+        if ( i != nbench - 1 )
+            zM.reset( nullptr );
+    }// for
     
     const auto  bs_M  = M.byte_size();
     const auto  bs_zM = zM->byte_size();
