@@ -172,6 +172,17 @@ main ( int      argc,
 
     auto  M = gen_matrix_log( n );
     
+    std::cout << "compressing " << std::endl
+              << "  matrix:     " << M.nrows() << " x " << M.ncols() << std::endl
+              << "  lowrank:    " << apx << std::endl
+              << "  accuracy:   " << std::setprecision(4) << std::scientific << acc << std::endl
+              << "  tilesize:   " << ntile << std::endl;
+
+    if ( zconf.get() != nullptr )
+        std::cout << "  zfp:        " << *zconf << std::endl;
+    else
+        std::cout << "  zfp:        none" << std::endl;
+
     auto    zM    = std::unique_ptr< block< value_t > >();
     double  t_min = -1;
 
