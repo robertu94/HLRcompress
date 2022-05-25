@@ -52,13 +52,13 @@ uniformly distributed on the unit circle in $`R^2`$.
 
 The command line arguments are
 
-  - **-n <int>** : set matrix size
-  - **-e <flt>** : set relative accuracy
-  - **-t <int>** : set tile size
-  - **-r <int>** : set ZFP compression rate
-  - **-p <flt>** : set ZFP compression accuracy
-  - **-a <flt>** : set ZFP compression adaptive accuracy
-  - **-b <int>** : benchmark compression
+  | `-n size` | set matrix size |
+  | `-e eps`  | set relative accuracy |
+  | `-t size` | set tile size |
+  | `-r rate` | set ZFP compression rate |
+  | `-p eps`  | set ZFP compression accuracy |
+  | `-a eps`  | set ZFP compression adaptive accuracy |
+  | `-b num`  | benchmark compression |
   
 Please note that for fixed or adaptive ZFP accuracy, the argument is a factor to the actual precision, 
 which is automatically chosen based on the compression accuracy and the matrix norm. By default this 
@@ -82,7 +82,7 @@ This example program needs additional HDF5 support, i.e., the HDF5 library insta
 It will read dense data from HDF5 files and compress it afterwards. The command line arguments are identical to the
 logarithmic example except for specifying the input data:
 
-  - **-i <file>** : define HDF5 file
+  | `-i file` | define HDF5 file |
 
 ```sh
 ./h5compress -i data.h5 -e 1e-6 -t 32 -p 1.0
