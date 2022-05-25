@@ -50,15 +50,25 @@ cmake -DBLA_VENDOR=Intel10_64ilp_seq -DHLRCOMPRESS_USE_ILP64=ON ..
 This example generates a matrix with entries $`a_{ij} = log |x_i - x_j|`$ with $`x_i`$ being
 uniformly distributed on the unit circle in $`R^2`$.
 
-The first command line argument defines the dimension of the matrix, the second argument
-specifies the compression error and the third argument the (maximal) size of tiles. With
-ZFP support enabled, the fourth argument defines the compression rate of ZFP.
+The command line arguments are
+
+  - **-n <int>** : set matrix size
+  - **-e <flt>** : set relative accuracy
+  - **-t <int>** : set tile size
+  - **-r <int>** : set ZFP compression rate
+  - **-p <flt>** : set ZFP compression accuracy
+  - **-a <flt>** : set ZFP compression adaptive accuracy
+  - **-b <int>** : benchmark compression
+  
+Please note that for fixed or adaptive ZFP accuracy, the argument is a factor to the actual precision, 
+which is automatically chosen based on the compression accuracy and the matrix norm. By default this 
+should be set to **1.0**.
 
 For a computation with 1024 rows/columns, $`10^{-4}`$ compression error, a tile size of 32
 and with a ZFP rate of 16 the full command line would be
 
 ```sh
-./logmatrix 1024 1e-4 32 16
+./logmatrix -i 1024 -e 1e-4 -t 32 -r 16
 ```
 
 With CUDA available, it will use the experimental CUDA based compression instead of the
@@ -69,10 +79,11 @@ CPU implementation.
 This example program needs additional HDF5 support, i.e., the HDF5 library installed
 (*cmake* should be able to detect correct paths).
 
-It will read dense data from HDF5 files and compress it afterwards. Aside from the first
-command line argument, which specifies the file to read, the remaining arguments are
-identical to the *logmatrix* example:
+It will read dense data from HDF5 files and compress it afterwards. The command line arguments are identical to the
+logarithmic example except for specifying the input data:
+
+  - **-i <file>** : define HDF5 file
 
 ```sh
-./h5compress data.h5 1e-6 32 24
+./h5compress -i data.h5 -e 1e-6 -t 32 -p 1.0
 ```
