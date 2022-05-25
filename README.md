@@ -52,13 +52,13 @@ uniformly distributed on the unit circle in $`R^2`$.
 
 The command line arguments are
 
-  | `-n size` | set matrix size |
-  | `-e eps`  | set relative accuracy |
-  | `-t size` | set tile size |
-  | `-r rate` | set ZFP compression rate |
-  | `-p eps`  | set ZFP compression accuracy |
-  | `-a eps`  | set ZFP compression adaptive accuracy |
-  | `-b num`  | benchmark compression |
+| `-n size` | set matrix size |
+| `-e eps`  | set relative accuracy |
+| `-t size` | set tile size |
+| `-r rate` | set ZFP compression rate |
+| `-p eps`  | set ZFP compression accuracy |
+| `-a eps`  | set ZFP compression adaptive accuracy |
+| `-b num`  | benchmark compression |
   
 Please note that for fixed or adaptive ZFP accuracy, the argument is a factor to the actual precision, 
 which is automatically chosen based on the compression accuracy and the matrix norm. By default this 
