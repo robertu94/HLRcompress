@@ -42,3 +42,6 @@ if(HDF5_FOUND)
   target_include_directories(hlrcompress PRIVATE ${HDF5_INCLUDE_DIRS})
   target_link_libraries (hlrcompress HLRcompress ${HDF5_LIBRARIES})
 endif()
+
+install(TARGETS hlrcompress EXPORT hlrcompress-targets RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS logmatrix   EXPORT hlrcompress-targets RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
