@@ -11,6 +11,8 @@
 #include <string>
 #include <chrono>
 #include <iomanip>
+#include <filesystem>
+#include <fstream>
 #include <unistd.h>
 
 #include <hdf5.h>
@@ -23,30 +25,60 @@
 
 using namespace hlrcompress;
 
-using  value_t  = double;
 using  my_clock = std::chrono::system_clock;
 
-const blas::matrix< value_t >
-read_matrix ( const std::string &  filename );
+//
+// compression options
+//
+auto  acc      = double(1e-4);
+auto  ntile    = size_t(32);
+auto  zconf    = std::unique_ptr< zconfig_t >();
+auto  apx      = std::string( "svd" );
+uint  nbench   = 1;
 
+//
+// actual compression function
+//
+template < typename value_t >
+void
+run ( const std::string &  datafile,
+      const size_t         dim0,
+      const size_t         dim1 );
+
+//
+// functions for reading data
+//
+template < typename value_t >
+blas::matrix< value_t >
+read_h5 ( const std::string &  filename );
+
+template < typename value_t >
+blas::matrix< value_t >
+read_raw ( const std::string &  filename,
+           const size_t         dim0,
+           const size_t         dim1 );
+
+//
+// main function
 int
 main ( int      argc,
        char **  argv )
 {
-    auto  matrix = std::string( "data.h5" );
-    auto  acc    = double(1e-4);
-    auto  ntile  = size_t(32);
-    auto  zconf  = std::unique_ptr< zconfig_t >();
-    auto  apx    = std::string( "svd" );
-    uint  nbench = 1;
+    auto  datafile = std::string( "data.h5" );
+    auto  datainfo = std::string( "" );
+    bool  zmod     = false;
     char  opt;
 
-    while (( opt = getopt( argc, argv, "i:e:t:a:p:r:l:hb:" )) != -1 )
+    while (( opt = getopt( argc, argv, "i:e:t:a:p:r:l:hb:nd:" )) != -1 )
     {
         switch (opt)
         {
             case 'i':
-                matrix = optarg;
+                datafile = optarg;
+                break;
+                
+            case 'd':
+                datainfo = optarg;
                 break;
                 
             case 'e':
@@ -63,25 +95,39 @@ main ( int      argc,
                 
             case 'a':
                 zconf = std::make_unique< zconfig_t >( adaptive( atof( optarg ) ) );
+                zmod  = true;
                 break;
                 
             case 'p':
                 zconf = std::make_unique< zconfig_t >( fixed_accuracy( atof( optarg ) ) );
+                zmod  = true;
                 break;
                 
             case 'r':
                 zconf = std::make_unique< zconfig_t >( fixed_rate( atoi( optarg ) ) );
+                zmod  = true;
                 break;
 
+            case 'n':
+                zconf = std::unique_ptr< zconfig_t >();
+                zmod  = true;
+                break;
+                
             case 'h' :
-                std::cout << "h5compress -i data.h5 [options]" << std::endl
+                std::cout << "For HDF5 data file call" << std::endl
+                          << "  hlrcompress -i <data.h5> [options]" << std::endl
                           << std::endl
+                          << "or for a raw data file call" << std::endl
+                          << "  hlrcompress -i <data.raw> -d \"(float|double) dim0 dim1\" [options]" << std::endl
+                          << std::endl
+                          << "with options including:" << std::endl
                           << "  -e eps  : relative accuracy of HLRcompress" << std::endl
                           << "  -t size : tile size of block layout" << std::endl
                           << "  -l apx  : low-rank approximation scheme (svd,rrqr,randsvd)" << std::endl
                           << "  -a fac  : adaptive ZFP compression" << std::endl
-                          << "  -p fac  : fixed accuracy ZFP compression" << std::endl
+                          << "  -p fac  : fixed accuracy ZFP compression (default)" << std::endl
                           << "  -r rate : fixed rate ZFP compression" << std::endl
+                          << "  -n      : no ZFP compression" << std::endl
                           << "  -b <n>  : run compress <n> times" << std::endl
                           << "  -h      : show this help" << std::endl;
                 exit( 0 );
@@ -95,11 +141,96 @@ main ( int      argc,
                 exit( 1 );
         }// switch
     }// while
+
+    if ( ! zmod )
+        zconf = std::make_unique< zconfig_t >( fixed_accuracy( 1.0 ) );
+
+    if ( ! std::filesystem::exists( datafile ) )
+    {
+        std::cout << "error: data file \"" << datafile << "\" not found" << std::endl;
+        return 1;
+    }// if
+
+    // auto  ext = std::filesystem::path::extension( datafile );
     
-    auto  M = read_matrix( matrix );
+    // std::transform( ext.begin(), ext.end(), ext.begin(), std::tolower );
+
+    if ( datainfo == "" )
+    {
+        run< double >( datafile, 0, 0 );
+        // if (( ext == "h5" ) || ( ext == "hdf5" ) || ( ext == "hdf" ))
+        // else
+        // {
+        //     std::cout << "unsupported datatype \"" << datatype << "\"; expected \"float\" or \"double\"" << std::endl;
+        //     return 1;
+        // }// else
+    }// if
+    else
+    {
+        auto    datatype = std::string( "double" );
+        size_t  dim0     = 0;
+        size_t  dim1     = 0;
+        auto    dentries = std::vector< std::string >();
+        auto    entry    = std::string( "" );
+        auto    dstream  = std::istringstream( datainfo );
+
+        while ( std::getline( dstream, entry, ' ' ) )
+            dentries.push_back( entry );
+
+        if ( dentries.size() != 3 )
+        {
+            std::cout << "invalid type/dimension specification; expected \"[float|double] dim0 dim1\"" << std::endl;
+            return 1;
+        }// if
+
+        datatype = dentries[0];
+        dim0     = atoi( dentries[1].c_str() );
+        dim1     = atoi( dentries[2].c_str() );
+
+        if ( dim0 * dim1 == 0 )
+        {
+            std::cout << "error: invalid dimensions (" << dim0 << " x " << dim1 << ")" << std::endl;
+            return 1;
+        }// if
+
+        if ( datatype == "float" )
+            run< float >( datafile, dim0, dim1 );
+        else if ( datatype == "double" )
+            run< double >( datafile, dim0, dim1 );
+        else
+        {
+            std::cout << "unsupported datatype \"" << datatype << "\"; expected \"float\" or \"double\"" << std::endl;
+            return 1;
+        }// if
+    }// else
+
+    return 0;
+}
+
+//
+// handles compression
+//
+template < typename value_t >
+void
+run ( const std::string &  datafile,
+      const size_t         dim0,
+      const size_t         dim1 )
+{
+    auto  M = blas::matrix< value_t >( 0, 0 );
+    
+    if ( dim0 * dim1 == 0 )
+        M = read_h5< value_t >( datafile );
+    else
+        M = read_raw< value_t >( datafile, dim0, dim1 );
+
+    if ( M.nrows() * M.ncols() == 0 )
+    {
+        std::cout << "error: invalid data in file \"" << datafile << "\" (dimension : " << M.nrows() << " x " << M.ncols() << ")" << std::endl;
+        exit( 0 );
+    }// if
     
     std::cout << "compressing " << std::endl
-              << "  matrix:     " << matrix << " ( " << M.nrows() << " x " << M.ncols() << " )" << std::endl
+              << "  data:       " << datafile << " ( " << M.nrows() << " x " << M.ncols() << " )" << std::endl
               << "  lowrank:    " << apx << std::endl
               << "  accuracy:   " << std::setprecision(4) << std::scientific << acc << std::endl
               << "  tilesize:   " << ntile << std::endl;
@@ -145,7 +276,7 @@ main ( int      argc,
               << " / " << double(bs_M) / double(bs_zM) << "x"
               << std::endl;
 
-    // needs to be uncompressed for error computation (for now)
+    // undo ZFP compression for error computation (for now)
     zM->uncompress();
 
     auto  norm_M = blas::norm_F( M );
@@ -154,8 +285,6 @@ main ( int      argc,
         std::cout << "error:        " << std::setprecision(4) << std::scientific << error_fro( M, *zM ) / norm_M << std::endl;
     else
         std::cout << "error:        " << std::setprecision(4) << std::scientific << error_fro( M, *zM ) << std::endl;
-    
-    return 0;
 }
 
 //
@@ -198,8 +327,9 @@ visit_func ( hid_t               /* loc_id */,
     return 0;
 }
 
-const blas::matrix< value_t >
-read_matrix ( const std::string &  filename )
+template < typename value_t >
+blas::matrix< value_t >
+read_h5 ( const std::string &  filename )
 {
     auto  file      = H5Fopen( filename.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT );
     auto  data_name = std::string( "" );
@@ -220,7 +350,10 @@ read_matrix ( const std::string &  filename )
     auto  dims      = std::vector< hsize_t >( ndims );
 
     if ( ndims != 2 )
-        std::cout << "not a matrix" << std::endl;
+    {
+        std::cout << "error: data not a matrix" << std::endl;
+        return blas::matrix< value_t >( 0, 0 );
+    }// if
                                                 
     H5Sget_simple_extent_dims( dataspace, dims.data(), nullptr );
     
@@ -238,3 +371,21 @@ read_matrix ( const std::string &  filename )
     
     return  M;
 }
+
+//
+// read raw data
+//
+template < typename value_t >
+blas::matrix< value_t >
+read_raw ( const std::string &  filename,
+           const size_t         dim0,
+           const size_t         dim1 )
+{
+    auto  file = std::ifstream( filename, std::ios::binary );
+    auto  M    = blas::matrix< value_t >( dim0, dim1 );
+
+    file.read( reinterpret_cast< char* >( M.data() ), sizeof(value_t) * dim0 * dim1 );
+    
+    return  M;
+}
+    

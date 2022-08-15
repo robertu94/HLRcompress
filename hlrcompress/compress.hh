@@ -22,6 +22,7 @@
 #include <hlrcompress/hlr/dense_block.hh>
 #include <hlrcompress/hlr/structured_block.hh>
 #include <hlrcompress/approx/accuracy.hh>
+#include <hlrcompress/approx/svd.hh>
 #include <hlrcompress/misc/tensor.hh>
 
 namespace hlrcompress
@@ -354,6 +355,9 @@ compress ( const blas::matrix< value_t > &  D,
 
 }// namespace detail
 
+//
+// compression function with all user defined options
+//
 template < typename value_t,
            typename approx_t >
 std::unique_ptr< block< value_t > >
@@ -366,6 +370,9 @@ compress ( const blas::matrix< value_t > &  D,
     return detail::compress( D, rel_prec, approx, ntile, &zconf );
 }
     
+//
+// compression function without ZFP compression
+//
 template < typename value_t,
            typename approx_t >
 std::unique_ptr< block< value_t > >
@@ -375,6 +382,21 @@ compress ( const blas::matrix< value_t > &  D,
            const size_t                     ntile )
 {
     return detail::compress( D, rel_prec, approx, ntile, nullptr );
+}
+
+//
+// general interface with default choice of lowrank approximation
+// and ZFP compression
+//
+template < typename value_t,
+           typename approx_t >
+std::unique_ptr< block< value_t > >
+compress ( const blas::matrix< value_t > &  D,
+           const double                     rel_prec )
+{
+    auto  zconf = std::make_unique< zconfig_t >( fixed_accuracy( 1.0 ) );
+        
+    return detail::compress( D, rel_prec, SVD(), 32, *zconf );
 }
     
 }// namespace hlrcompress
