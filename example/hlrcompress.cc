@@ -15,7 +15,9 @@
 #include <fstream>
 #include <unistd.h>
 
-#include <hdf5.h>
+#if WITH_HDF5 == 1
+#  include <hdf5.h>
+#endif
 
 #include <hlrcompress/compress.hh>
 #include <hlrcompress/approx/svd.hh>
@@ -48,9 +50,11 @@ run ( const std::string &  datafile,
 //
 // functions for reading data
 //
+#if WITH_HDF5 == 1
 template < typename value_t >
 blas::matrix< value_t >
 read_h5 ( const std::string &  filename );
+#endif
 
 template < typename value_t >
 blas::matrix< value_t >
@@ -64,7 +68,7 @@ int
 main ( int      argc,
        char **  argv )
 {
-    auto  datafile = std::string( "data.h5" );
+    auto  datafile = std::string( "data.dat" );
     auto  datainfo = std::string( "" );
     bool  zmod     = false;
     char  opt;
@@ -114,10 +118,14 @@ main ( int      argc,
                 break;
                 
             case 'h' :
+                #if WITH_HDF5 == 1                    
                 std::cout << "For HDF5 data file call" << std::endl
                           << "  hlrcompress -i <data.h5> [options]" << std::endl
                           << std::endl
                           << "or for a raw data file call" << std::endl
+                    #else
+                std::cout << "Call" << std::endl
+                    #endif
                           << "  hlrcompress -i <data.raw> -d \"(float|double) dim0 dim1\" [options]" << std::endl
                           << std::endl
                           << "with options including:" << std::endl
@@ -151,19 +159,14 @@ main ( int      argc,
         return 1;
     }// if
 
-    // auto  ext = std::filesystem::path::extension( datafile );
-    
-    // std::transform( ext.begin(), ext.end(), ext.begin(), std::tolower );
-
     if ( datainfo == "" )
     {
+        #if WITH_HDF5 == 1
         run< double >( datafile, 0, 0 );
-        // if (( ext == "h5" ) || ( ext == "hdf5" ) || ( ext == "hdf" ))
-        // else
-        // {
-        //     std::cout << "unsupported datatype \"" << datatype << "\"; expected \"float\" or \"double\"" << std::endl;
-        //     return 1;
-        // }// else
+        #else
+        std::cout << "error: no data type information supplied; see \"-h\"" << std::endl;
+        return 1;
+        #endif
     }// if
     else
     {
@@ -217,10 +220,12 @@ run ( const std::string &  datafile,
       const size_t         dim1 )
 {
     auto  M = blas::matrix< value_t >( 0, 0 );
-    
+
+    #if WITH_HDF5 == 1
     if ( dim0 * dim1 == 0 )
         M = read_h5< value_t >( datafile );
     else
+    #endif
         M = read_raw< value_t >( datafile, dim0, dim1 );
 
     if ( M.nrows() * M.ncols() == 0 )
@@ -286,6 +291,8 @@ run ( const std::string &  datafile,
     else
         std::cout << "error:        " << std::setprecision(4) << std::scientific << error_fro( M, *zM ) << std::endl;
 }
+
+#if WITH_HDF5 == 1
 
 //
 // HDF5 read functions
@@ -371,6 +378,8 @@ read_h5 ( const std::string &  filename )
     
     return  M;
 }
+
+#endif
 
 //
 // read raw data
