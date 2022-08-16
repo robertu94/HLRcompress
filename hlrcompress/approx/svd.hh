@@ -26,7 +26,7 @@ std::pair< blas::matrix< value_t >,
 svd ( blas::matrix< value_t > &  M,
       const accuracy &           acc )
 {
-    using  real_t = typename real_type< value_t >::type_t;
+    using  real_t = real_type_t< value_t >;
 
     //
     // perform SVD of M

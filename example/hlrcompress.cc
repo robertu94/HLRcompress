@@ -35,7 +35,7 @@ using  my_clock = std::chrono::system_clock;
 auto  acc      = double(1e-4);
 auto  ntile    = size_t(32);
 auto  zconf    = std::unique_ptr< zconfig_t >();
-auto  apx      = std::string( "svd" );
+auto  apx      = std::string( "default" );
 uint  nbench   = 1;
 
 //
@@ -252,7 +252,8 @@ run ( const std::string &  datafile,
     {
         auto  tic = my_clock::now();
 
-        if      ( apx == "svd"     ) zM = compress< value_t >( M, acc, SVD(), ntile, *zconf );
+        if      ( apx == "default" ) zM = compress< value_t >( M, acc, hlrcompress::default_approx(), ntile, *zconf );
+        else if ( apx == "svd"     ) zM = compress< value_t >( M, acc, SVD(), ntile, *zconf );
         else if ( apx == "rrqr"    ) zM = compress< value_t >( M, acc, RRQR(), ntile, *zconf );
         else if ( apx == "randsvd" ) zM = compress< value_t >( M, acc, RandSVD(), ntile, *zconf );
         else

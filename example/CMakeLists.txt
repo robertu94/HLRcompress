@@ -11,8 +11,10 @@ endif()
 
 
 if(HDF5_FOUND)
+  add_definitions(-DWITH_HDF5=1)
   set(WITH_HDF5 "1")
 else()
+  add_definitions(-DWITH_HDF5=0)
   set(WITH_HDF5 "0")
 endif()
 

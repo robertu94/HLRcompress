@@ -565,6 +565,60 @@ add ( const T1    f,
             B(i,j) += f * A(i,j);
 }
 
+//!
+//! \ingroup  BLAS_Module
+//! \brief compute A ≔ A + α·x·y^H
+//!
+template < typename value_t >
+void
+add_r1 ( const value_t              alpha,
+         const vector< value_t > &  x,
+         const vector< value_t > &  y,
+         matrix< value_t > &        A )
+{
+    HLRCOMPRESS_DBG_ASSERT( x.length() == A.nrows() );
+    HLRCOMPRESS_DBG_ASSERT( y.length() == A.ncols() );
+
+    if ( A.row_stride() == 1 )
+    {
+        ger( int_t(A.nrows()),
+             int_t(A.ncols()),
+             alpha,
+             x.data(),
+             int_t(x.stride()),
+             y.data(),
+             int_t(y.stride()),
+             A.data(),
+             int_t(A.col_stride()) );
+    }// if
+    else
+    {
+        const idx_t  n = idx_t(A.nrows());
+        const idx_t  m = idx_t(A.ncols());
+
+        if constexpr ( is_complex_type_v< value_t > )
+        {
+            for ( idx_t j = 0; j < m; ++j )
+            {
+                const value_t  f = alpha * std::conj( y(j) );
+    
+                for ( idx_t i = 0; i < n; ++i )
+                    A(i,j) += x(i) * f;
+            }// for
+        }// if
+        else
+        {
+            for ( idx_t j = 0; j < m; ++j )
+            {
+                const value_t  f = alpha * y(j);
+    
+                for ( idx_t i = 0; i < n; ++i )
+                    A(i,j) += x(i) * f;
+            }// for
+        }// else
+    }// else
+}
+
 //
 // compute y ≔ β·y + α·A·x
 //

@@ -278,6 +278,16 @@ public:
 };
 
 //
+// return real copy of given vector
+//
+template < typename value_t >
+vector< value_t >
+copy ( const vector< value_t > &  v )
+{
+    return v.copy();
+}
+
+//
 // gives access to vector value type
 //
 template < typename T_value >

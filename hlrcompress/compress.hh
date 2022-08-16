@@ -23,10 +23,38 @@
 #include <hlrcompress/hlr/structured_block.hh>
 #include <hlrcompress/approx/accuracy.hh>
 #include <hlrcompress/approx/svd.hh>
+#include <hlrcompress/approx/rrqr.hh>
+#include <hlrcompress/approx/aca.hh>
 #include <hlrcompress/misc/tensor.hh>
 
 namespace hlrcompress
 {
+
+struct default_approx
+{
+    //
+    // matrix approximation routines
+    //
+    
+    template < typename value_t >
+    std::pair< blas::matrix< value_t >,
+               blas::matrix< value_t > >
+    operator () ( blas::matrix< value_t > &  M,
+                  const accuracy &           acc ) const
+    {
+        return aca_full( M, acc );
+    }
+
+    template < typename value_t >
+    std::pair< blas::matrix< value_t >,
+               blas::matrix< value_t > >
+    operator () ( const blas::matrix< value_t > &  U,
+                  const blas::matrix< value_t > &  V,
+                  const accuracy &                 acc ) const 
+    {
+        return svd( U, V, acc );
+    }
+};
 
 //
 // build hierarchical low-rank format from given dense matrix without reording rows/columns
