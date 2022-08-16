@@ -42,7 +42,14 @@ struct default_approx
     operator () ( blas::matrix< value_t > &  M,
                   const accuracy &           acc ) const
     {
-        return aca_full( M, acc );
+        auto  [ U, V ] = aca_full( M, acc );
+
+        // try to recompress via SVD for ranks leading to choosing 
+        // low-rank representation for block in HLRcompress
+        if ( U.ncols() < std::min( M.nrows(), M.ncols() ) / 2 )
+            return svd( U, V, acc );
+        else
+            return { std::move( U ), std::move( V ) };
     }
 
     template < typename value_t >
@@ -424,7 +431,7 @@ compress ( const blas::matrix< value_t > &  D,
 {
     auto  zconf = std::make_unique< zconfig_t >( fixed_accuracy( 1.0 ) );
         
-    return detail::compress( D, rel_prec, SVD(), 32, *zconf );
+    return detail::compress( D, rel_prec, default_approx(), 64, *zconf );
 }
     
 }// namespace hlrcompress

@@ -15,7 +15,7 @@
 #include <fstream>
 #include <unistd.h>
 
-#if WITH_HDF5 == 1
+#if HLRCOMPRESS_USE_HDF5 == 1
 #  include <hdf5.h>
 #endif
 
@@ -50,7 +50,7 @@ run ( const std::string &  datafile,
 //
 // functions for reading data
 //
-#if WITH_HDF5 == 1
+#if HLRCOMPRESS_USE_HDF5 == 1
 template < typename value_t >
 blas::matrix< value_t >
 read_h5 ( const std::string &  filename );
@@ -118,7 +118,7 @@ main ( int      argc,
                 break;
                 
             case 'h' :
-                #if WITH_HDF5 == 1                    
+                #if HLRCOMPRESS_USE_HDF5 == 1                    
                 std::cout << "For HDF5 data file call" << std::endl
                           << "  hlrcompress -i <data.h5> [options]" << std::endl
                           << std::endl
@@ -161,7 +161,7 @@ main ( int      argc,
 
     if ( datainfo == "" )
     {
-        #if WITH_HDF5 == 1
+        #if HLRCOMPRESS_USE_HDF5 == 1
         run< double >( datafile, 0, 0 );
         #else
         std::cout << "error: no data type information supplied; see \"-h\"" << std::endl;
@@ -221,7 +221,7 @@ run ( const std::string &  datafile,
 {
     auto  M = blas::matrix< value_t >( 0, 0 );
 
-    #if WITH_HDF5 == 1
+    #if HLRCOMPRESS_USE_HDF5 == 1
     if ( dim0 * dim1 == 0 )
         M = read_h5< value_t >( datafile );
     else
@@ -293,7 +293,7 @@ run ( const std::string &  datafile,
         std::cout << "error:        " << std::setprecision(4) << std::scientific << error_fro( M, *zM ) << std::endl;
 }
 
-#if WITH_HDF5 == 1
+#if HLRCOMPRESS_USE_HDF5 == 1
 
 //
 // HDF5 read functions

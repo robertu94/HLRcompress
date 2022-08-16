@@ -11,11 +11,9 @@ endif()
 
 
 if(HDF5_FOUND)
-  add_definitions(-DWITH_HDF5=1)
-  set(WITH_HDF5 "1")
+  add_definitions(-DHLRCOMPRESS_USE_HDF5=1)
 else()
-  add_definitions(-DWITH_HDF5=0)
-  set(WITH_HDF5 "0")
+  add_definitions(-DHLRCOMPRESS_USE_HDF5=0)
 endif()
 
 add_executable (hlrcompress hlrcompress.cc)

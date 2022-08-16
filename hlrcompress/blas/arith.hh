@@ -1017,7 +1017,7 @@ std::enable_if_t< is_matrix_v< T1 > &&
 norm_F ( const T1 &  U,
          const T2 &  V )
 {
-    HLRCOMPRESS_DBG_ASSERT( U.ncols() != V.ncols() );
+    HLRCOMPRESS_DBG_ASSERT( U.ncols() == V.ncols() );
     
     using  value_t = typename T1::value_t;
 
