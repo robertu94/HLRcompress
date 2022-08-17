@@ -50,22 +50,22 @@ cmake -DBLA_VENDOR=Intel10_64ilp_seq -DHLRCOMPRESS_USE_ILP64=ON ..
 This program reads raw data or data from HDF5 files (assuming HDF5 support configured via **cmake**) and applies
 HLRcompression algorithm.
 
-The command line arguments are
-
-  - `-i file` : define HDF5/raw file
-  - `-d type dim0, dim1` : define data type (*float* or *double* and dimensions of *raw* data)
-  - `-e eps`  : set relative accuracy
-  - `-l apx`  : low-rank approximation scheme (svd,rrqr,randsvd)
-  - `-t size` : set tile size
-  - `-p eps`  : set ZFP compression accuracy (default)
-  - `-r rate` : set ZFP compression rate
-  - `-a eps`  : set ZFP compression adaptive accuracy
-  - `-n`      : no ZFP compression
-  - `-b num`  : benchmark compression
+| Option               | Description          |
+|----------------------|----------------------|
+| `-i file`            | define data file (HDF5 or raw data) |
+| `-d "type dim0 dim1"`| define data type for raw data (*float* or *double* and dimensions) |
+| `-e eps`             | set relative accuracy |
+| `-l apx`             | low-rank approximation scheme (svd,rrqr,randsvd) |
+| `-t size`            | set tile size |
+| `-p eps`             | set ZFP compression accuracy (default) |
+| `-r rate`            | set ZFP compression rate |
+| `-a eps`             | set ZFP compression adaptive accuracy |
+| `-n`                 | no ZFP compression |
+| `-b num`             | benchmark compression |
   
 Please note that for fixed or adaptive ZFP accuracy, the argument is a factor to the actual precision, 
 which is automatically chosen based on the compression accuracy and the matrix norm. By default this 
-should be set to **1.0**.
+should be set to **1**.
 
 ```sh
 ./h5compress -i data.h5 -e 1e-6 -t 32 -p 1.0
@@ -76,16 +76,16 @@ should be set to **1.0**.
 This example generates a matrix with entries $`a_{ij} = log |x_i - x_j|`$ with $`x_i`$ being
 uniformly distributed on the unit circle in $`R^2`$.
 
-The supported command line arguments are:
-
-  - `-n size` : set matrix size
-  - `-e eps`  : set relative accuracy
-  - `-l apx`  : low-rank approximation scheme (svd,rrqr,randsvd)
-  - `-t size` : set tile size
-  - `-p eps`  : set ZFP compression accuracy (default)
-  - `-r rate` : set ZFP compression rate
-  - `-a eps`  : set ZFP compression adaptive accuracy
-  - `-b num`  : benchmark compression
+| Option    | Description          |
+|-----------|----------------------|
+| `-n size` | set matrix size |
+| `-e eps`  | set relative accuracy |
+| `-l apx`  | low-rank approximation scheme (svd,rrqr,randsvd) |
+| `-t size` | set tile size |
+| `-p eps`  | set ZFP compression accuracy (default) |
+| `-r rate` | set ZFP compression rate |
+| `-a eps`  | set ZFP compression adaptive accuracy |
+| `-b num`  | benchmark compression |
 
 As for **hlrcompress** the argument to `-p` and `-p` are factors for the actual accuracy
 and should be kept close to 1.
