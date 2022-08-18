@@ -14,6 +14,7 @@
 #include <utility>
 
 #include <hlrcompress/blas/arith.hh>
+#include <hlrcompress/approx/svd.hh>
 
 namespace hlrcompress
 {
@@ -25,9 +26,10 @@ template < typename value_t >
 std::pair< blas::matrix< value_t >,
            blas::matrix< value_t > >
 aca  ( const blas::matrix< value_t > &  M,
-       const accuracy &                 acc )
+       const accuracy &                 acc,
+       const bool                       recompress = true )
 {
-    using  real_t  = real_type_t< value_t >;
+    using  real_t = real_type_t< value_t >;
 
     // value considered zero to avoid division by small values
     static constexpr real_t  zero_val = std::numeric_limits< real_t >::epsilon() * std::numeric_limits< real_t >::epsilon();
@@ -169,7 +171,10 @@ aca  ( const blas::matrix< value_t > &  M,
         blas::copy( V[l], v_l );
     }// for
     
-    return { std::move( MU ), std::move( MV ) };
+    if ( recompress )
+        return svd( MU, MV, acc );
+    else
+        return { std::move( MU ), std::move( MV ) };
 }
 
 //
@@ -178,10 +183,11 @@ aca  ( const blas::matrix< value_t > &  M,
 template < typename value_t >
 std::pair< blas::matrix< value_t >,
            blas::matrix< value_t > >
-aca_full  (  blas::matrix< value_t > &  M,
-            const accuracy &            acc )
+aca_full  ( blas::matrix< value_t > &  M,
+            const accuracy &           acc,
+            const bool                 recompress = true )
 {
-    using  real_t  = real_type_t< value_t >;
+    using  real_t = real_type_t< value_t >;
 
     // value considered zero to avoid division by small values
     static constexpr real_t  zero_val = std::numeric_limits< real_t >::epsilon() * std::numeric_limits< real_t >::epsilon();
@@ -286,8 +292,102 @@ aca_full  (  blas::matrix< value_t > &  M,
         blas::copy( U[l], u_l );
         blas::copy( V[l], v_l );
     }// for
+
+    if ( recompress )
+        return svd( MU, MV, acc );
+    else
+        return { std::move( MU ), std::move( MV ) };
+}
+
+//
+// truncate low-rank matrix U·V' up to accuracy <acc>
+//
+template < typename value_t >
+std::pair< blas::matrix< value_t >,
+           blas::matrix< value_t > >
+aca_full ( const blas::matrix< value_t > &  U,
+           const blas::matrix< value_t > &  V,
+           const accuracy &                 acc )
+{
+    using  real_t = real_type_t< value_t >;
+
+    HLRCOMPRESS_ASSERT( U.ncols() == V.ncols() );
+
+    const idx_t  nrows_U = idx_t( U.nrows() );
+    const idx_t  nrows_V = idx_t( V.nrows() );
+    const idx_t  in_rank = idx_t( V.ncols() );
+
+    //
+    // don't increase rank
+    //
+
+    if ( in_rank == 0 )
+        return { std::move( blas::matrix< value_t >( nrows_U, 0 ) ),
+                 std::move( blas::matrix< value_t >( nrows_V, 0 ) ) };
+
+    //
+    // truncate given low-rank matrix
+    //
     
-    return { std::move( MU ), std::move( MV ) };
+    if ( in_rank >= std::min( nrows_U, nrows_V ) / 2 )
+    {
+        //
+        // since rank is too large, build U = U·V^T and do full-SVD
+        //
+            
+        auto  M    = blas::prod( value_t(1), U, adjoint(V) );
+        auto  lacc = accuracy( acc );
+
+        return aca_full( M, lacc );
+    }// if
+    else
+    {
+        //////////////////////////////////////////////////////////////
+        //
+        // QR-factorisation of U and V with explicit Q
+        //
+
+        auto  QU = blas::copy( U );
+        auto  RU = blas::matrix< value_t >( in_rank, in_rank );
+        
+        blas::qr( QU, RU );
+        
+        auto  QV = blas::copy( V );
+        auto  RV = std::move( blas::matrix< value_t >( in_rank, in_rank ) );
+        
+        blas::qr( QV, RV );
+
+        //
+        // R = R_U · upper_triangular(QV)^H = R_V^H
+        //
+        
+        auto  R = blas::prod( value_t(1), RU, adjoint(RV) );
+        
+        //
+        // low-rank approximation of R
+        //
+            
+        auto  [ Us, Vs ] = aca_full( R, acc );
+        
+        const auto  out_rank = Us.ncols();
+
+        //
+        // only build new vectors, if rank is decreased
+        //
+        
+        if ( out_rank < in_rank )
+        {
+            auto  OU = blas::prod( value_t(1), QU, Us );
+            auto  OV = blas::prod( value_t(1), QV, Vs );
+
+            return { std::move( OU ), std::move( OV ) };
+        }// if
+        else
+        {
+            // rank has not changed, so return original matrices
+            return { std::move( blas::copy( U ) ), std::move( blas::copy( V ) ) };
+        }// else
+    }// else
 }
 
 }// namespace hlrcompress

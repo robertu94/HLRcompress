@@ -42,14 +42,14 @@ struct default_approx
     operator () ( blas::matrix< value_t > &  M,
                   const accuracy &           acc ) const
     {
-        auto  [ U, V ] = aca_full( M, acc );
+        auto  [ U, V ] = aca_full( M, acc, true );
 
-        // try to recompress via SVD for ranks leading to choosing 
-        // low-rank representation for block in HLRcompress
-        if ( U.ncols() < std::min( M.nrows(), M.ncols() ) / 2 )
-            return svd( U, V, acc );
-        else
-            return { std::move( U ), std::move( V ) };
+        // // try to recompress via SVD for ranks leading to choosing 
+        // // low-rank representation for block in HLRcompress
+        // if ( U.ncols() < std::min( M.nrows(), M.ncols() ) / 2 )
+        //     return svd( U, V, acc );
+        // else
+        return { std::move( U ), std::move( V ) };
     }
 
     template < typename value_t >

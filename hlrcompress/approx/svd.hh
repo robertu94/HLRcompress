@@ -71,7 +71,7 @@ svd ( const blas::matrix< value_t > &  U,
       const blas::matrix< value_t > &  V,
       const accuracy &                 acc )
 {
-    using  real_t  = typename real_type< value_t >::type_t;
+    using  real_t = real_type_t< value_t >;
 
     HLRCOMPRESS_ASSERT( U.ncols() == V.ncols() );
 
