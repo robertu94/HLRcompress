@@ -191,7 +191,11 @@ main ( int      argc,
         auto  tic = my_clock::now();
 
         #if HLRCOMPRESS_USE_CUDA == 1
-        zM    = compress_cuda( M, acc, apx, ntile );
+          if (apx =="svd") zM    = compress_cuda( M, acc, SVD(), ntile );
+          else if ( apx == "rrqr"    ) zM = compress_cuda( M, acc, RRQR(), ntile);
+          else if ( apx == "randsvd" ) zM = compress_cuda( M, acc, RandSVD(), ntile);
+          else
+              std::cout << "unknown low-rank approximation type : " << apx << std::endl;
         #else
         if      ( apx == "svd"     ) zM = compress< value_t >( M, acc, SVD(), ntile, *zconf );
         else if ( apx == "rrqr"    ) zM = compress< value_t >( M, acc, RRQR(), ntile, *zconf );

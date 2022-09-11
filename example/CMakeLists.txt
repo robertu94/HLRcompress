@@ -30,12 +30,10 @@ if(TBB_FOUND)
   target_link_libraries(hlrcompress ${TBB_LIBRARIES})
 endif()
 
-if(ZFP_FOUND)
-  target_include_directories(logmatrix PRIVATE ${ZFP_INCLUDE_DIRS})
-  target_link_libraries(logmatrix ${ZFP_LIBRARIES})
+if(TARGET zfp::zfp)
+  target_link_libraries(logmatrix zfp::zfp)
 
-  target_include_directories(hlrcompress PRIVATE ${ZFP_INCLUDE_DIRS})
-  target_link_libraries(hlrcompress ${ZFP_LIBRARIES})
+  target_link_libraries(hlrcompress zfp::zfp)
 endif()
 
 if(HDF5_FOUND)

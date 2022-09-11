@@ -341,7 +341,7 @@ read_h5 ( const std::string &  filename )
 {
     auto  file      = H5Fopen( filename.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT );
     auto  data_name = std::string( "" );
-    auto  status    = H5Ovisit( file, H5_INDEX_NAME, H5_ITER_INC, visit_func, & data_name );
+    auto  status    = H5Ovisit3( file, H5_INDEX_NAME, H5_ITER_INC, visit_func, & data_name, H5O_INFO_ALL);
 
     if ( status != 0 )
         return blas::matrix< value_t >( 0, 0 );
