@@ -34,7 +34,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
-# option(BUILD_SHARED_LIBS "build shared libraries over static libraries" ON)
+option(BUILD_SHARED_LIBS "build shared libraries over static libraries" ON)
 
 # header only so no testing
 option(ENABLE_TESTING OFF)
@@ -64,7 +64,7 @@ else()
   set(HLRCOMPRESS_USE_ILP64 "0")
 endif()
 
-find_package(zfp)
+find_package(zfp CONFIG)
 if(TARGET zfp::zfp)
   set(ZFP_FOUND 1)
 else()
@@ -77,8 +77,34 @@ message( STATUS "cuSolver: ${CUDA_cusolver_LIBRARY}")
 
 option(HLRCOMPRESS_USE_CUDA "use the experimental cuda implementation" ${CUDA_FOUND})
 
-add_subdirectory(hlrcompress)
+add_library(HLRcompress INTERFACE)
+
+set(HLRCOMPRESS_INSTALL_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}/hlrcompress")
+
+target_link_libraries(HLRcompress
+  INTERFACE
+  zfp::zfp
+  )
+target_include_directories(HLRcompress
+  INTERFACE 
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/hlrcompress>
+  $<INSTALL_INTERFACE:${HLRCOMPRESS_INSTALL_INCLUDEDIR}>
+  )
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/hlrcompress/approx DESTINATION ${HLRCOMPRESS_INSTALL_INCLUDEDIR})
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/hlrcompress/blas DESTINATION ${HLRCOMPRESS_INSTALL_INCLUDEDIR})
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/hlrcompress/hlr DESTINATION ${HLRCOMPRESS_INSTALL_INCLUDEDIR})
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/hlrcompress/misc DESTINATION ${HLRCOMPRESS_INSTALL_INCLUDEDIR})
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/hlrcompress/compress.hh DESTINATION ${HLRCOMPRESS_INSTALL_INCLUDEDIR})
+
 add_subdirectory(example)
+
+option(HLRCOMPRESS_USE_LIBPRESSIO "build libpressio support" FALSE)
+if(HLRCOMPRESS_USE_LIBPRESSIO)
+  find_package(LibPressio REQUIRED)
+  find_package(std_compat REQUIRED)
+  add_subdirectory(libpressio)
+endif()
 
 set(HLRCOMPRESS_INSTALL_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}/hlrcompress")
 
